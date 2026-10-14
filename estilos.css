@@ -158,26 +158,47 @@ button, input { font: inherit; }
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   text-decoration: none;
-  color: var(--crema);
+  padding: 4px 12px 4px 4px;
+  border-radius: 40px;
+  background: rgba(242, 183, 5, 0.08);
+  border: 1px solid rgba(242, 183, 5, 0.25);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.logo:hover {
+  background: rgba(242, 183, 5, 0.15);
+  border-color: var(--dorado);
 }
 
 .logo__img {
-  height: 48px;
-  width: 48px;
+  height: 60px;
+  width: 60px;
   object-fit: cover;
   border-radius: 50%;
   background: var(--crema);
-  padding: 3px;
+  padding: 4px;
   border: 2px solid var(--dorado);
-  box-shadow: 0 0 15px rgba(242, 183, 5, 0.4);
+  box-shadow: 0 0 20px rgba(242, 183, 5, 0.5);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .logo:hover .logo__img {
   transform: rotate(10deg) scale(1.05);
-  box-shadow: 0 0 25px rgba(242, 183, 5, 0.7);
+  box-shadow: 0 0 30px rgba(242, 183, 5, 0.8);
+}
+
+.logo__texto {
+  font-size: 1.15rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: var(--crema);
+}
+
+@media (max-width: 780px) {
+  .logo__img { height: 48px; width: 48px; }
+  .logo__texto { font-size: 0.9rem; }
 }
 
 .amp { color: var(--dorado); }
