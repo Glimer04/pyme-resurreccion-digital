@@ -163,12 +163,21 @@ button, input { font: inherit; }
   color: var(--crema);
 }
 
-.logo__img { height: 45px; width: auto; }
+.logo__img {
+  height: 48px;
+  width: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--crema);
+  padding: 3px;
+  border: 2px solid var(--dorado);
+  box-shadow: 0 0 15px rgba(242, 183, 5, 0.4);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
 
-.logo__texto {
-  font-size: 1rem;
-  font-weight: bold;
-  letter-spacing: 1.5px;
+.logo:hover .logo__img {
+  transform: rotate(10deg) scale(1.05);
+  box-shadow: 0 0 25px rgba(242, 183, 5, 0.7);
 }
 
 .amp { color: var(--dorado); }
