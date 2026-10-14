@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pide tu bizcocho, brownie o postre frío en Miel & Morir Soñando. Formulario con fecha de entrega, mapa y pruebas del incidente.">
+  <title>Pedidos y Evidencias | Miel & Morir Soñando</title>
+  <link rel="icon" href="img/logo-miel.png" type="image/png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="estilos.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <div id="sitio">
+
+    <header class="cabecera">
+      <a href="index.html" class="logo">
+        <img src="img/logo-miel.png" alt="Logo Miel & Morir Soñando" class="logo__img">
+        <span class="logo__texto">MIEL <span class="amp">&</span> MORIR SOÑANDO</span>
+      </a>
+
+      <nav aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="servicios.html">Catálogo</a>
+        <a href="contacto.html" aria-current="page">Pedidos</a>
+      </nav>
+
+      <button id="boton-tema" class="boton-tema" aria-label="Cambiar tema">🌙</button>
+    </header>
+
+    <main>
+
+      <!-- HERO CONTACTO -->
+      <section class="hero hero--catalogo">
+        <div class="hero__contenido">
+          <p class="etiqueta mono">● ARCHIVO_003 // EVIDENCIA DIGITAL</p>
+          <h1 class="hero__titulo">
+            El caso sigue<br>
+            <span class="destello">abierto.</span>
+          </h1>
+          <p class="hero__intro">
+            Reconstruimos nuestra presencia, pero la historia todavía tiene
+            preguntas sin respuesta. Explora las pruebas del incidente
+            y haz tu pedido de resurrección.
+          </p>
+        </div>
+      </section>
+
+      <!-- PRUEBAS DEL INCIDENTE -->
+      <section class="seccion">
+        <p class="etiqueta mono">// EVIDENCIAS RECREADAS PARA EL PROYECTO</p>
+        <h2>Registro del <span class="resaltado">incidente</span></h2>
+        <p class="seccion__intro">
+          Estos son los archivos ficticios que documentan lo que ocurrió
+          la noche del 12 de marzo. Forman parte de la narrativa del proyecto.
+        </p>
+
+        <div class="tarjetas">
+          <article class="tarjeta tarjeta--prueba">
+            <span class="tarjeta__numero mono">PRUEBA 01</span>
+            <h3>La web desaparecida</h3>
+            <p>
+              Registro narrativo: nuestro dominio dejó de responder a las 23:47.
+              El hosting reportó "cuenta inexistente" al día siguiente.
+            </p>
+            <p class="tarjeta__meta mono">12/03/2026 · 23:47</p>
+          </article>
+
+          <article class="tarjeta tarjeta--prueba">
+            <span class="tarjeta__numero mono">PRUEBA 02</span>
+            <h3>Perfiles inaccesibles</h3>
+            <p>
+              Instagram y Facebook mostraron "perfil no disponible"
+              durante 48 horas. Recuperamos acceso tras verificación manual.
+            </p>
+            <p class="tarjeta__meta mono">13/03/2026 · 08:15</p>
+          </article>
+
+          <article class="tarjeta tarjeta--prueba">
+            <span class="tarjeta__numero mono">PRUEBA 03</span>
+            <h3>El mensaje del USB</h3>
+            <p>
+              "Tu negocio ha sido borrado de la existencia digital.
+              Si quieres recuperarlo, deberás reinventarlo."
+            </p>
+            <p class="tarjeta__meta mono">14/03/2026 · 10:00</p>
+          </article>
+        </div>
+
+        <p class="nota-mono mono">
+          ⚠ Nota: estas evidencias son elementos de una historia académica
+          inventada. No representan un ataque real.
+        </p>
+      </section>
+
+      <!-- FORMULARIO DE PEDIDOS -->
+      <section class="seccion seccion--banner">
+        <div class="banner">
+          <p class="etiqueta mono">// CANAL DE PEDIDOS REACTIVADO</p>
+          <h2>Haz tu pedido de <span class="resaltado">resurrección</span></h2>
+          <p class="seccion__intro" style="margin-left:auto;margin-right:auto;">
+            Cuéntanos qué postre quieres, para cuándo y dónde lo entregamos.
+            Te confirmamos por WhatsApp en menos de 1 hora.
+          </p>
+
+          <form id="formulario-contacto" class="cotizador">
+            <label for="nombre">Nombre completo</label>
+            <input id="nombre" name="nombre" type="text" required placeholder="Escribe tu nombre">
+
+            <label for="correo">Correo electrónico</label>
+            <input id="correo" name="correo" type="email" required placeholder="tu@correo.com">
+
+            <label for="telefono">Teléfono / WhatsApp</label>
+            <input id="telefono" name="telefono" type="tel" required placeholder="809-555-0123">
+
+            <label for="producto-contacto">Producto</label>
+            <select id="producto-contacto" name="producto" required>
+              <option value="">— Elige un producto —</option>
+              <option value="Bizcocho de Miel">Bizcocho de Miel</option>
+              <option value="Bizcocho Personalizado">Bizcocho Personalizado</option>
+              <option value="Brownie Fudge">Brownie Fudge</option>
+              <option value="Blondie de Coco">Blondie de Coco</option>
+              <option value="Flan de Coco">Flan de Coco</option>
+              <option value="Cheesecake de Mango">Cheesecake de Mango</option>
+              <option value="Cajita Regalo Petit">Cajita Regalo Petit</option>
+              <option value="Cajita Regalo Premium">Cajita Regalo Premium</option>
+            </select>
+
+            <label for="fecha-entrega">Fecha de entrega (mínimo 48 horas después)</label>
+            <input id="fecha-entrega" name="fecha" type="date" required>
+
+            <label for="direccion">Dirección de entrega</label>
+            <input id="direccion" name="direccion" type="text" required placeholder="Calle, sector, ciudad">
+
+            <label for="mensaje">Detalles adicionales (opcional)</label>
+            <textarea id="mensaje" name="mensaje" rows="4" placeholder="Ej: dedicatoria, colores, alérgenos..."></textarea>
+
+            <button type="submit" class="boton boton--primario">ENVIAR PEDIDO</button>
+            <p id="estado-formulario" aria-live="polite" class="estado-formulario"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- MAPA -->
+      <section class="seccion">
+        <p class="etiqueta mono">// UBICACIÓN FÍSICA</p>
+        <h2>Encuéntranos <span class="resaltado">en el mapa</span></h2>
+        <p class="seccion__intro">
+          Nuestro taller principal está en Santo Domingo. Haz clic en el
+          marcador para ver la dirección exacta.
+        </p>
+        <div id="mapa" class="mapa" aria-label="Mapa de ubicación de Miel & Morir Soñando"></div>
+      </section>
+
+    </main>
+
+    <footer class="pie">
+      <div class="pie__grid">
+        <div>
+          <p class="pie__marca">MIEL <span class="amp">&</span> MORIR SOÑANDO</p>
+          <p class="pie__texto">Repostería artesanal dominicana. Resucitada digitalmente el 26 de marzo.</p>
+        </div>
+        <div>
+          <h4>Explora</h4>
+          <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="servicios.html">Catálogo</a></li>
+            <li><a href="contacto.html">Pedidos</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:hola@mielmorirsonando.do">hola@mielmorirsonando.do</a></li>
+            <li><a href="tel:+18095550123">+1 (809) 555-0123</a></li>
+            <li>Santo Domingo, República Dominicana</li>
+          </ul>
+        </div>
+      </div>
+      <p class="pie__copy mono">© 2026 Miel & Morir Soñando · Hecho con HTML, CSS y memoria.</p>
+    </footer>
+
+  </div>
+
+  <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
+
+  <section id="asistente" class="asistente" aria-label="Asistente virtual">
+    <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
+    <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
+      <p class="mensaje-bot">¡Hola! Soy Miel 🐝 ¿Necesitas ayuda con tu pedido?</p>
+    </div>
+    <form id="chat-formulario">
+      <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
+      <input id="chat-entrada" type="text" placeholder="Escribe: pedido, entrega, precio..." required>
+      <button type="submit">➤</button>
+    </form>
+  </section>
+
+  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente">💬</button>
+
+</body>
+</html>
+
