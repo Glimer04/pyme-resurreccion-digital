@@ -1364,3 +1364,16 @@ body.modo-claro .testimonio {
 body.modo-claro .testimonio__texto { color: #2a1f14; }
 
 body.modo-claro .testimonio__autor { color: #007a5e; }
+
+.boton-ir-pedido {
+  display: inline-block;
+  margin: 25px auto 0;
+  padding: 16px 32px;
+  font-size: 1rem;
+  animation: pulsoBoton 2s infinite;
+}
+
+@keyframes pulsoBoton {
+  0%, 100% { box-shadow: 0 0 25px rgba(242, 183, 5, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(242, 183, 5, 0.8); }
+}
