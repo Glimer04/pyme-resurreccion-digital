@@ -12,7 +12,6 @@
 <body>
 
   <!-- PANTALLA DE ERROR INICIAL -->
-    <!-- PANTALLA DE ERROR INICIAL -->
   <div id="pantalla-error" class="pantalla-error">
     <div class="scanlines" aria-hidden="true"></div>
     <div class="ruido" aria-hidden="true"></div>
@@ -34,14 +33,17 @@
       </div>
     </div>
 
-    <h1 class="glitch" data-text="ESTA REPOSTERÍA">ESTA REPOSTERÍA</h1>
-    <h2 class="glitch-sub" data-text="YA NO EXISTE.">YA NO EXISTE.</h2>
-    <p class="error-texto">... o eso es lo que alguien quiere que creas.</p>
+    <!-- Todo esto aparece DESPUÉS de la terminal -->
+    <div id="revelacion" class="revelacion">
+      <h1 class="glitch" data-text="ESTA REPOSTERÍA">ESTA REPOSTERÍA</h1>
+      <h2 class="glitch-sub" data-text="YA NO EXISTE.">YA NO EXISTE.</h2>
+      <p class="error-texto">... o eso es lo que alguien quiere que creas.</p>
 
-    <button id="boton-recuperar" class="boton-recuperar" type="button">
-      ⟳ RECUPERAR SISTEMA
-    </button>
-    <p class="pista mono">Haz clic para iniciar la recuperación</p>
+      <button id="boton-recuperar" class="boton-recuperar" type="button">
+        ⟳ RECUPERAR SISTEMA
+      </button>
+      <p class="pista mono">Haz clic para iniciar la recuperación</p>
+    </div>
   </div>
 
   <!-- SITIO PRINCIPAL (oculto al inicio) -->
