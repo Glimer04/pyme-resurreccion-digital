@@ -283,6 +283,14 @@ if (formCotizador) {
       'Precio base: RD$' + base.toLocaleString('es-DO') + '<br>' +
       'Total estimado: <strong>RD$' + total.toLocaleString('es-DO') + '</strong><br>' +
       '<small>Precio final puede variar según decoración. Confirma por WhatsApp.</small>';
+
+    // Guardar el producto cotizado y mostrar botón de pedido
+    localStorage.setItem('producto_cotizado', nombre);
+
+    const botonIrPedido = document.getElementById('boton-ir-pedido');
+    if (botonIrPedido) {
+      botonIrPedido.style.display = 'inline-block';
+    }
   });
 }
 
