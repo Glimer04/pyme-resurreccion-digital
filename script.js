@@ -2,6 +2,83 @@
    MIEL & MORIR SOÑANDO — script
    ============================== */
 
+/* ============================================================
+   EFECTO TERMINAL — PANTALLA DE ERROR HACKEADA
+   ============================================================ */
+
+// Textos que se van a "escribir" automáticamente
+const lineasTerminal = [
+  { id: 'linea-1', texto: 'Iniciando protocolo de búsqueda...' },
+  { id: 'linea-2', texto: 'Buscando negocio: Miel & Morir Soñando' },
+  { id: 'linea-3', texto: '✗ ERROR 0x404 — NEGOCIO NO ENCONTRADO' }
+];
+
+// Escribe una línea letra por letra
+function escribirLinea(elementoId, texto, callback) {
+  const elemento = document.getElementById(elementoId);
+  if (!elemento) { if (callback) callback(); return; }
+
+  let i = 0;
+  elemento.textContent = '';
+
+  const intervalo = setInterval(function () {
+    elemento.textContent += texto.charAt(i);
+    i++;
+    if (i >= texto.length) {
+      clearInterval(intervalo);
+      if (callback) callback();
+    }
+  }, 35);
+}
+
+// Secuencia completa de la terminal
+function iniciarSecuenciaTerminal() {
+  escribirLinea(lineasTerminal[0].id, lineasTerminal[0].texto, function () {
+    setTimeout(function () {
+      escribirLinea(lineasTerminal[1].id, lineasTerminal[1].texto, function () {
+        setTimeout(function () {
+          escribirLinea(lineasTerminal[2].id, lineasTerminal[2].texto, function () {
+            setTimeout(animarBarraProgreso, 500);
+          });
+        }, 400);
+      });
+    }, 400);
+  });
+}
+
+// Anima la barra de progreso de 0% a 100% y luego falla
+function animarBarraProgreso() {
+  const barra = document.getElementById('barra-progreso');
+  const porcentaje = document.getElementById('porcentaje-progreso');
+  if (!barra || !porcentaje) return;
+
+  let progreso = 0;
+  const intervalo = setInterval(function () {
+    progreso += Math.floor(Math.random() * 8) + 3;
+
+    if (progreso >= 100) {
+      progreso = 100;
+      clearInterval(intervalo);
+      setTimeout(function () {
+        barra.style.backgroundImage = 'none';
+        barra.style.backgroundColor = 'rgba(255, 92, 92, 0.3)';
+        porcentaje.textContent = 'FALLÓ';
+        porcentaje.style.color = '#ff5c5c';
+      }, 600);
+    }
+
+    barra.style.backgroundSize = progreso + '% 100%';
+    porcentaje.textContent = progreso + '%';
+  }, 180);
+}
+
+// Inicia la secuencia cuando el DOM esté listo
+if (document.getElementById('pantalla-error')) {
+  window.addEventListener('load', function () {
+    setTimeout(iniciarSecuenciaTerminal, 300);
+  });
+}
+
 // 1. PANTALLA DE ERROR → RECUPERAR
 const pantallaError = document.getElementById('pantalla-error');
 const sitio = document.getElementById('sitio');
