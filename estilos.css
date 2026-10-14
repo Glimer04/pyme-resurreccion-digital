@@ -1070,3 +1070,63 @@ body.modo-claro .cabecera {
   .terminal-hackeo__cuerpo { font-size: 0.75rem; padding: 14px; }
   .barra-progreso { width: 120px; }
 }
+
+/* ============ REVELACIÓN DESPUÉS DE LA TERMINAL ============ */
+.revelacion {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s ease;
+  text-align: center;
+  pointer-events: none;
+}
+
+.revelacion.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Suavizar la aparición del título y subtítulo */
+.revelacion h1,
+.revelacion h2 {
+  transition: text-shadow 0.5s ease;
+}
+
+.revelacion.visible h1,
+.revelacion.visible h2 {
+  animation: interferencia 3s infinite;
+}
+
+/* El texto descriptivo aparece un poco después */
+.revelacion .error-texto {
+  opacity: 0;
+  transition: opacity 0.8s ease 0.3s;
+}
+
+.revelacion.visible .error-texto {
+  opacity: 1;
+}
+
+/* El botón aparece último, con retraso */
+.revelacion .boton-recuperar {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.5s ease 0.6s, transform 0.5s ease 0.6s;
+}
+
+.revelacion.visible .boton-recuperar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* La pista aparece con el botón */
+.revelacion .pista {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.8s;
+}
+
+.revelacion.visible .pista {
+  opacity: 1;
+}
