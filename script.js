@@ -325,6 +325,22 @@ const formularioContacto = document.getElementById('formulario-contacto');
 const estadoFormulario = document.getElementById('estado-formulario');
 
 if (formularioContacto) {
+
+  // Precargar producto cotizado desde la página de servicios
+  const productoGuardado = localStorage.getItem('producto_cotizado');
+  if (productoGuardado) {
+    const selectProducto = document.getElementById('producto-contacto');
+    if (selectProducto) {
+      for (let i = 0; i < selectProducto.options.length; i++) {
+        if (selectProducto.options[i].value === productoGuardado) {
+          selectProducto.selectedIndex = i;
+          break;
+        }
+      }
+    }
+    localStorage.removeItem('producto_cotizado');
+  }
+   
   // Configurar fecha mínima: 48 horas a partir de hoy
   const inputFecha = document.getElementById('fecha-entrega');
   if (inputFecha) {
