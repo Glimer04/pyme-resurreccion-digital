@@ -361,7 +361,40 @@ if (formularioContacto) {
     const correo = document.getElementById('correo').value.trim();
     const telefono = document.getElementById('telefono').value.trim();
     const producto = document.getElementById('producto-contacto').value;
-  
+
+       /* ---- CÓDIGO DE DESCUENTO (solo primer pedido) ---- */
+  const inputCodigo = document.getElementById('codigo-descuento');
+  const botonAplicar = document.getElementById('aplicar-codigo');
+  const estadoCodigo = document.getElementById('estado-codigo');
+  const descuentoYaUsado = localStorage.getItem('miel_descuento_usado') === 'true';
+
+  if (descuentoYaUsado && inputCodigo && botonAplicar) {
+    // Ya usó el descuento: deshabilitar
+    inputCodigo.disabled = true;
+    inputCodigo.placeholder = 'Código ya utilizado';
+    botonAplicar.disabled = true;
+    botonAplicar.textContent = 'Usado';
+    estadoCodigo.className = 'estado-codigo usado';
+    estadoCodigo.innerHTML =
+      '🐝 Ya usaste tu código de bienvenida. ¡Gracias por tu primer pedido!';
+  } else if (botonAplicar && inputCodigo) {
+    botonAplicar.addEventListener('click', function () {
+      const valor = inputCodigo.value.trim().toUpperCase();
+
+      if (valor === 'RESURGIR20') {
+        estadoCodigo.className = 'estado-codigo valido';
+        estadoCodigo.innerHTML =
+          '✅ ¡Código válido! Tendrás <strong>20% de descuento</strong> en este primer pedido.';
+      } else if (valor === '') {
+        estadoCodigo.className = 'estado-codigo invalido';
+        estadoCodigo.textContent = '⚠ Escribe un código primero.';
+      } else {
+        estadoCodigo.className = 'estado-codigo invalido';
+        estadoCodigo.textContent = '⚠ Código no reconocido. Verifica e intenta de nuevo.';
+      }
+    });
+  }
+
      // Filtrar teléfono: solo números
   const inputTelefono = document.getElementById('telefono');
   if (inputTelefono) {
@@ -403,6 +436,14 @@ if (formularioContacto) {
 
     if (direccion.length < 8) {
       return mostrarError('Por favor escribe una dirección más completa.');
+    }
+
+         // Verificar código de descuento si se ingresó
+    const codigoIngresado = document.getElementById('codigo-descuento');
+    if (codigoIngresado && codigoIngresado.value.trim().toUpperCase() === 'RESURGIR20') {
+    
+       // Marcar como usado en este navegador (solo primer pedido)
+      localStorage.setItem('miel_descuento_usado', 'true');
     }
 
     estadoFormulario.className = 'estado-formulario exito';
