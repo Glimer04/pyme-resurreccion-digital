@@ -72,11 +72,13 @@ function animarBarraProgreso() {
   }, 180);
 }
 
-// Inicia la secuencia cuando el DOM esté listo
+// Inicia la secuencia directamente (defer garantiza DOM listo)
 if (document.getElementById('pantalla-error')) {
-  window.addEventListener('load', function () {
-    setTimeout(iniciarSecuenciaTerminal, 300);
-  });
+  console.log('🎬 Iniciando secuencia de terminal en 300ms...');
+  setTimeout(function () {
+    console.log('▶ Ejecutando terminal...');
+    iniciarSecuenciaTerminal();
+  }, 300);
 }
 
 // 1. PANTALLA DE ERROR → RECUPERAR
