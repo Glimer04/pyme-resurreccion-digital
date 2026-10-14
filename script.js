@@ -183,3 +183,130 @@ botonesCotizar.forEach(function (boton) {
   });
 });
 
+/* ============ FORMULARIO DE PEDIDOS ============ */
+const formularioContacto = document.getElementById('formulario-contacto');
+const estadoFormulario = document.getElementById('estado-formulario');
+
+if (formularioContacto) {
+  // 1. Configurar fecha mínima: 48 horas a partir de hoy
+  const inputFecha = document.getElementById('fecha-entrega');
+  if (inputFecha) {
+    const hoy = new Date();
+    hoy.setDate(hoy.getDate() + 2); // +48 horas
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    inputFecha.min = `${yyyy}-${mm}-${dd}`;
+  }
+
+  // 2. Validar y procesar el envío
+  formularioContacto.addEventListener('submit', function (evento) {
+    evento.preventDefault();
+    estadoFormulario.className = 'estado-formulario';
+    estadoFormulario.textContent = '';
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const correo = document.getElementById('correo').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const producto = document.getElementById('producto-contacto').value;
+    const fecha = document.getElementById('fecha-entrega').value;
+    const direccion = document.getElementById('direccion').value.trim();
+
+    // Validaciones manuales adicionales
+    if (nombre.length < 3) {
+      return mostrarError('Por favor escribe tu nombre completo.');
+    }
+
+    if (!correo.includes('@') || !correo.includes('.')) {
+      return mostrarError('El correo no parece válido.');
+    }
+
+    if (telefono.replace(/\D/g, '').length < 10) {
+      return mostrarError('El teléfono debe tener al menos 10 dígitos.');
+    }
+
+    if (!producto) {
+      return mostrarError('Selecciona un producto del catálogo.');
+    }
+
+    if (!fecha) {
+      return mostrarError('Debes elegir una fecha de entrega.');
+    }
+
+    // Verificar que la fecha sea al menos 48h en el futuro
+    const fechaElegida = new Date(fecha + 'T12:00:00');
+    const fechaMinima = new Date();
+    fechaMinima.setDate(fechaMinima.getDate() + 2);
+    fechaMinima.setHours(0, 0, 0, 0);
+
+    if (fechaElegida < fechaMinima) {
+      return mostrarError('La fecha de entrega debe ser al menos 48 horas después de hoy.');
+    }
+
+    if (direccion.length < 8) {
+      return mostrarError('Por favor escribe una dirección más completa.');
+    }
+
+    // Éxito
+    estadoFormulario.className = 'estado-formulario exito';
+    estadoFormulario.innerHTML =
+      '🍰 ¡Gracias, <strong>' + nombre.split(' ')[0] + '</strong>!<br>' +
+      'Tu pedido de <strong>' + producto + '</strong> fue registrado para el ' +
+      formatearFecha(fecha) + '.<br>' +
+      '<small>Esta es una demostración académica. No se envió ningún correo real.</small>';
+
+    formularioContacto.reset();
+  });
+}
+
+function mostrarError(mensaje) {
+  estadoFormulario.className = 'estado-formulario error';
+  estadoFormulario.textContent = '⚠ ' + mensaje;
+}
+
+function formatearFecha(iso) {
+  const partes = iso.split('-');
+  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  return partes[2] + ' de ' + meses[parseInt(partes[1], 10) - 1] + ' de ' + partes[0];
+}
+
+/* ============ MAPA INTERACTIVO (LEAFLET) ============ */
+const contenedorMapa = document.getElementById('mapa');
+
+if (contenedorMapa && typeof L !== 'undefined') {
+  // Coordenadas de Santo Domingo, República Dominicana
+  const latitud = 18.4861;
+  const longitud = -69.9312;
+
+  const mapa = L.map('mapa').setView([latitud, longitud], 14);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(mapa);
+
+  const marcador = L.marker([latitud, longitud]).addTo(mapa);
+
+  marcador.bindPopup(
+    '<strong>🐝 Miel & Morir Soñando</strong>' +
+    'Taller principal<br>' +
+    'Calle Duarte #123, Zona Colonial<br>' +
+    'Santo Domingo, R.D.<br>' +
+    '<small>Abierto de lunes a sábado · 9 AM – 7 PM</small>'
+  ).openPopup();
+
+  // Círculo decorativo alrededor del taller
+  L.circle([latitud, longitud], {
+    color: '#F2B705',
+    fillColor: '#F2B705',
+    fillOpacity: 0.1,
+    radius: 350
+  }).addTo(mapa);
+
+} else if (contenedorMapa && typeof L === 'undefined') {
+  contenedorMapa.innerHTML =
+    '<p style="padding:20px;color:#b8b0c9;">El mapa no pudo cargarse. Revisa tu conexión.</p>';
+}
+
+console.log('📍 Mapa y formulario cargados correctamente.');
