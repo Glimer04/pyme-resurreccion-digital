@@ -337,6 +337,14 @@ if (formularioContacto) {
     const correo = document.getElementById('correo').value.trim();
     const telefono = document.getElementById('telefono').value.trim();
     const producto = document.getElementById('producto-contacto').value;
+  
+     // Filtrar teléfono: solo números
+  const inputTelefono = document.getElementById('telefono');
+  if (inputTelefono) {
+    inputTelefono.addEventListener('input', function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    });
+  }
     const fecha = document.getElementById('fecha-entrega').value;
     const direccion = document.getElementById('direccion').value.trim();
 
