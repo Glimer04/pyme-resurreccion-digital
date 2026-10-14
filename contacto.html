@@ -139,8 +139,14 @@
             <label for="direccion">Dirección de entrega</label>
             <input id="direccion" name="direccion" type="text" required placeholder="Calle, sector, ciudad">
 
-            <label for="mensaje">Detalles adicionales (opcional)</label>
-            <textarea id="mensaje" name="mensaje" rows="4" placeholder="Ej: dedicatoria, colores, alérgenos..."></textarea>
+            <label for="codigo-descuento">¿Tienes un código de descuento? (opcional)</label>
+<div class="codigo-descuento-wrap">
+  <input id="codigo-descuento" name="codigo" type="text" 
+         placeholder="Ej: RESURGIR20" maxlength="20"
+         style="text-transform: uppercase;">
+  <button type="button" id="aplicar-codigo" class="boton-aplicar">Aplicar</button>
+</div>
+<p id="estado-codigo" class="estado-codigo" aria-live="polite"></p>
 
             <button type="submit" class="boton boton--primario">ENVIAR PEDIDO</button>
             <p id="estado-formulario" aria-live="polite" class="estado-formulario"></p>
