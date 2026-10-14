@@ -113,7 +113,12 @@
             <input id="correo" name="correo" type="email" required placeholder="tu@correo.com">
 
             <label for="telefono">Teléfono / WhatsApp</label>
-            <input id="telefono" name="telefono" type="tel" required placeholder="809-555-0123">
+            <input id="telefono" name="telefono" type="tel" required 
+       placeholder="8095550123" 
+       pattern="[0-9]{10}" 
+       maxlength="10"
+       inputmode="numeric"
+       title="Solo números, 10 dígitos (sin guiones)">
 
             <label for="producto-contacto">Producto</label>
             <select id="producto-contacto" name="producto" required>
