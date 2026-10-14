@@ -926,3 +926,147 @@ body.modo-claro .cabecera {
     padding: 14px 16px;
   }
 }
+
+/* ============ PANTALLA DE ERROR — ESTILO HACKEADO ============ */
+.pantalla-error {
+  position: relative;
+  overflow: hidden;
+  animation: flicker 8s infinite;
+}
+
+/* Efecto de parpadeo sutil (flicker) */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  41% { opacity: 1; }
+  42% { opacity: 0.92; }
+  43% { opacity: 1; }
+  92% { opacity: 0.96; }
+  93% { opacity: 1; }
+}
+
+/* Ruido estático de fondo */
+.ruido {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+  animation: ruidoAnimado 0.5s steps(4) infinite;
+  z-index: 1;
+}
+
+@keyframes ruidoAnimado {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1%); }
+  50% { transform: translate(1%, -2%); }
+  75% { transform: translate(-1%, 2%); }
+  100% { transform: translate(2%, -1%); }
+}
+
+/* Terminal falsa */
+.terminal-hackeo {
+  position: relative;
+  z-index: 2;
+  width: min(680px, 92vw);
+  background: rgba(5, 4, 15, 0.85);
+  border: 1px solid var(--menta);
+  border-radius: 8px;
+  box-shadow:
+    0 0 40px rgba(0, 255, 198, 0.15),
+    inset 0 0 40px rgba(0, 255, 198, 0.05);
+  margin-bottom: 40px;
+  text-align: left;
+  overflow: hidden;
+}
+
+.terminal-hackeo__barra {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(0, 255, 198, 0.08);
+  border-bottom: 1px solid rgba(0, 255, 198, 0.2);
+}
+
+.terminal-hackeo__barra > span:not(.terminal-hackeo__titulo) {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dorado);
+  opacity: 0.7;
+}
+
+.terminal-hackeo__barra > span:nth-child(1) { background: #ff5c5c; }
+.terminal-hackeo__barra > span:nth-child(2) { background: #f2b705; }
+.terminal-hackeo__barra > span:nth-child(3) { background: #00ffc6; }
+
+.terminal-hackeo__titulo {
+  margin-left: auto;
+  color: var(--menta);
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.terminal-hackeo__cuerpo {
+  padding: 18px 20px;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--crema);
+  min-height: 150px;
+}
+
+.terminal-hackeo__cuerpo p {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompt {
+  color: var(--menta);
+  margin-right: 6px;
+}
+
+.cursor {
+  display: inline-block;
+  color: var(--menta);
+  animation: parpadeo 0.8s steps(2) infinite;
+  margin-left: 2px;
+}
+
+@keyframes parpadeo {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Barra de progreso */
+.terminal-hackeo__progreso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.barra-progreso {
+  display: inline-block;
+  width: 220px;
+  height: 12px;
+  background:
+    linear-gradient(90deg, var(--menta) 0%, var(--menta) 100%);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 255, 198, 0.1);
+  border-radius: 2px;
+  transition: background-size 0.3s ease;
+}
+
+#porcentaje-progreso {
+  color: var(--dorado);
+  font-size: 0.78rem;
+  min-width: 40px;
+}
+
+/* Ajuste responsive */
+@media (max-width: 600px) {
+  .terminal-hackeo__cuerpo { font-size: 0.75rem; padding: 14px; }
+  .barra-progreso { width: 120px; }
+}
