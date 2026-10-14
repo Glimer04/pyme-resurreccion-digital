@@ -106,3 +106,80 @@ function agregarMensaje(texto, clase) {
 }
 
 console.log('🐝 Miel & Morir Soñando: sistema iniciado.');
+
+/* ============ FILTROS DEL CATÁLOGO ============ */
+const botonesFiltro = document.querySelectorAll('.filtro');
+const productos = document.querySelectorAll('.producto');
+
+botonesFiltro.forEach(function (boton) {
+  boton.addEventListener('click', function () {
+    botonesFiltro.forEach(function (b) { b.classList.remove('activo'); });
+    boton.classList.add('activo');
+
+    const filtro = boton.dataset.filtro;
+
+    productos.forEach(function (producto) {
+      if (filtro === 'todos' || producto.dataset.categoria === filtro) {
+        producto.classList.remove('oculto-producto');
+      } else {
+        producto.classList.add('oculto-producto');
+      }
+    });
+  });
+});
+
+/* ============ COTIZADOR EN LÍNEA ============ */
+const formCotizador = document.getElementById('cotizador');
+const resultadoCotizador = document.getElementById('resultado-cotizador');
+
+if (formCotizador) {
+  formCotizador.addEventListener('submit', function (evento) {
+    evento.preventDefault();
+
+    const productoSeleccionado = document.getElementById('producto-cotizar').value;
+    const porciones = parseFloat(document.getElementById('porciones-cotizar').value);
+    const extras = parseFloat(document.getElementById('extras-cotizar').value);
+
+    if (!productoSeleccionado) {
+      resultadoCotizador.innerHTML = '⚠️ Selecciona un producto primero.';
+      return;
+    }
+
+    const partes = productoSeleccionado.split('|');
+    const nombre = partes[0];
+    const base = parseFloat(partes[1]);
+
+    const total = (base * porciones) + extras;
+
+    resultadoCotizador.innerHTML =
+      '🍰 Producto: <strong>' + nombre + '</strong><br>' +
+      'Precio base: RD$' + base.toLocaleString('es-DO') + '<br>' +
+      'Total estimado: <strong>RD$' + total.toLocaleString('es-DO') + '</strong><br>' +
+      '<small>Precio final puede variar según decoración. Confirma por WhatsApp.</small>';
+  });
+}
+
+/* ============ BOTONES "COTIZAR" DE PRODUCTOS ============ */
+const botonesCotizar = document.querySelectorAll('.boton-cotizar');
+
+botonesCotizar.forEach(function (boton) {
+  boton.addEventListener('click', function () {
+    const nombre = boton.dataset.producto;
+    const base = boton.dataset.base;
+
+    // Auto-selecciona en el cotizador de abajo
+    const select = document.getElementById('producto-cotizar');
+    if (select) {
+      // Busca la opción que coincida
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value.startsWith(nombre + '|')) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+      // Baja hasta el cotizador
+      document.getElementById('cotizador').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+});
+
