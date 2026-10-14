@@ -3,7 +3,7 @@
    ============================== */
 
 /* ============================================================
-   EFECTO TERMINAL — PANTALLA DE ERROR HACKEADA
+   1. EFECTO TERMINAL — PANTALLA DE ERROR HACKEADA
    ============================================================ */
 
 // Textos que se van a "escribir" automáticamente
@@ -54,17 +54,38 @@ function animarBarraProgreso() {
 
   let progreso = 0;
   const intervalo = setInterval(function () {
-    progreso += Math.floor(Math.random() * 8) + 3;
+    // Incremento realista: rápido al principio, lento al final
+    let avance;
+    if (progreso < 40) {
+      avance = Math.floor(Math.random() * 8) + 4;
+    } else if (progreso < 80) {
+      avance = Math.floor(Math.random() * 5) + 2;
+    } else {
+      avance = Math.floor(Math.random() * 3) + 1;
+    }
+
+    progreso += avance;
 
     if (progreso >= 100) {
       progreso = 100;
       clearInterval(intervalo);
+
+      barra.style.backgroundSize = '100% 100%';
+      porcentaje.textContent = '100%';
+
+      // Pausa dramática antes del fallo
       setTimeout(function () {
         barra.style.backgroundImage = 'none';
         barra.style.backgroundColor = 'rgba(255, 92, 92, 0.3)';
-        porcentaje.textContent = 'FALLÓ';
+        porcentaje.textContent = '✗ FALLÓ';
         porcentaje.style.color = '#ff5c5c';
-      }, 600);
+        porcentaje.style.fontWeight = 'bold';
+
+        // Después del fallo, revela el título y el botón
+        setTimeout(revelarSistema, 800);
+      }, 700);
+
+      return;
     }
 
     barra.style.backgroundSize = progreso + '% 100%';
@@ -72,7 +93,16 @@ function animarBarraProgreso() {
   }, 180);
 }
 
-// Inicia la secuencia directamente (defer garantiza DOM listo)
+// Revela el título glitch y el botón después de la terminal
+function revelarSistema() {
+  const revelacion = document.getElementById('revelacion');
+  if (!revelacion) return;
+
+  revelacion.classList.add('visible');
+  console.log('✨ Sistema revelado. Esperando acción del usuario.');
+}
+
+// 🎬 ARRANQUE DE LA SECUENCIA (defer garantiza DOM listo)
 if (document.getElementById('pantalla-error')) {
   console.log('🎬 Iniciando secuencia de terminal en 300ms...');
   setTimeout(function () {
@@ -81,7 +111,10 @@ if (document.getElementById('pantalla-error')) {
   }, 300);
 }
 
-// 1. PANTALLA DE ERROR → RECUPERAR
+/* ============================================================
+   2. PANTALLA DE ERROR → RECUPERAR SISTEMA
+   ============================================================ */
+
 const pantallaError = document.getElementById('pantalla-error');
 const sitio = document.getElementById('sitio');
 const botonRecuperar = document.getElementById('boton-recuperar');
@@ -94,7 +127,10 @@ if (botonRecuperar) {
   });
 }
 
-// 2. MODO CLARO / OSCURO
+/* ============================================================
+   3. MODO CLARO / OSCURO
+   ============================================================ */
+
 const botonTema = document.getElementById('boton-tema');
 if (botonTema) {
   botonTema.addEventListener('click', function () {
@@ -104,7 +140,10 @@ if (botonTema) {
   });
 }
 
-// 3. EASTER EGG — RECETA SECRETA
+/* ============================================================
+   4. EASTER EGG — RECETA SECRETA
+   ============================================================ */
+
 const botonSecreto = document.getElementById('boton-secreto');
 if (botonSecreto) {
   botonSecreto.addEventListener('click', function () {
@@ -122,7 +161,10 @@ if (botonSecreto) {
   });
 }
 
-// 4. CHATBOT MIEL
+/* ============================================================
+   5. CHATBOT MIEL
+   ============================================================ */
+
 const botonChat = document.getElementById('boton-chat');
 const asistente = document.getElementById('asistente');
 const chatFormulario = document.getElementById('chat-formulario');
@@ -186,7 +228,10 @@ function agregarMensaje(texto, clase) {
 
 console.log('🐝 Miel & Morir Soñando: sistema iniciado.');
 
-/* ============ FILTROS DEL CATÁLOGO ============ */
+/* ============================================================
+   6. FILTROS DEL CATÁLOGO
+   ============================================================ */
+
 const botonesFiltro = document.querySelectorAll('.filtro');
 const productos = document.querySelectorAll('.producto');
 
@@ -207,7 +252,10 @@ botonesFiltro.forEach(function (boton) {
   });
 });
 
-/* ============ COTIZADOR EN LÍNEA ============ */
+/* ============================================================
+   7. COTIZADOR EN LÍNEA
+   ============================================================ */
+
 const formCotizador = document.getElementById('cotizador');
 const resultadoCotizador = document.getElementById('resultado-cotizador');
 
@@ -238,47 +286,48 @@ if (formCotizador) {
   });
 }
 
-/* ============ BOTONES "COTIZAR" DE PRODUCTOS ============ */
+/* ============================================================
+   8. BOTONES "COTIZAR" DE PRODUCTOS
+   ============================================================ */
+
 const botonesCotizar = document.querySelectorAll('.boton-cotizar');
 
 botonesCotizar.forEach(function (boton) {
   boton.addEventListener('click', function () {
     const nombre = boton.dataset.producto;
-    const base = boton.dataset.base;
 
-    // Auto-selecciona en el cotizador de abajo
     const select = document.getElementById('producto-cotizar');
     if (select) {
-      // Busca la opción que coincida
       for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value.startsWith(nombre + '|')) {
           select.selectedIndex = i;
           break;
         }
       }
-      // Baja hasta el cotizador
       document.getElementById('cotizador').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 });
 
-/* ============ FORMULARIO DE PEDIDOS ============ */
+/* ============================================================
+   9. FORMULARIO DE PEDIDOS
+   ============================================================ */
+
 const formularioContacto = document.getElementById('formulario-contacto');
 const estadoFormulario = document.getElementById('estado-formulario');
 
 if (formularioContacto) {
-  // 1. Configurar fecha mínima: 48 horas a partir de hoy
+  // Configurar fecha mínima: 48 horas a partir de hoy
   const inputFecha = document.getElementById('fecha-entrega');
   if (inputFecha) {
     const hoy = new Date();
-    hoy.setDate(hoy.getDate() + 2); // +48 horas
+    hoy.setDate(hoy.getDate() + 2);
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     inputFecha.min = `${yyyy}-${mm}-${dd}`;
   }
 
-  // 2. Validar y procesar el envío
   formularioContacto.addEventListener('submit', function (evento) {
     evento.preventDefault();
     estadoFormulario.className = 'estado-formulario';
@@ -291,7 +340,6 @@ if (formularioContacto) {
     const fecha = document.getElementById('fecha-entrega').value;
     const direccion = document.getElementById('direccion').value.trim();
 
-    // Validaciones manuales adicionales
     if (nombre.length < 3) {
       return mostrarError('Por favor escribe tu nombre completo.');
     }
@@ -312,7 +360,6 @@ if (formularioContacto) {
       return mostrarError('Debes elegir una fecha de entrega.');
     }
 
-    // Verificar que la fecha sea al menos 48h en el futuro
     const fechaElegida = new Date(fecha + 'T12:00:00');
     const fechaMinima = new Date();
     fechaMinima.setDate(fechaMinima.getDate() + 2);
@@ -326,7 +373,6 @@ if (formularioContacto) {
       return mostrarError('Por favor escribe una dirección más completa.');
     }
 
-    // Éxito
     estadoFormulario.className = 'estado-formulario exito';
     estadoFormulario.innerHTML =
       '🍰 ¡Gracias, <strong>' + nombre.split(' ')[0] + '</strong>!<br>' +
@@ -350,11 +396,13 @@ function formatearFecha(iso) {
   return partes[2] + ' de ' + meses[parseInt(partes[1], 10) - 1] + ' de ' + partes[0];
 }
 
-/* ============ MAPA INTERACTIVO (LEAFLET) ============ */
+/* ============================================================
+   10. MAPA INTERACTIVO (LEAFLET)
+   ============================================================ */
+
 const contenedorMapa = document.getElementById('mapa');
 
 if (contenedorMapa && typeof L !== 'undefined') {
-  // Coordenadas de Santo Domingo, República Dominicana
   const latitud = 18.4861;
   const longitud = -69.9312;
 
@@ -375,7 +423,6 @@ if (contenedorMapa && typeof L !== 'undefined') {
     '<small>Abierto de lunes a sábado · 9 AM – 7 PM</small>'
   ).openPopup();
 
-  // Círculo decorativo alrededor del taller
   L.circle([latitud, longitud], {
     color: '#F2B705',
     fillColor: '#F2B705',
@@ -389,3 +436,4 @@ if (contenedorMapa && typeof L !== 'undefined') {
 }
 
 console.log('📍 Mapa y formulario cargados correctamente.');
+
