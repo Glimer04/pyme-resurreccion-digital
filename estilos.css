@@ -1377,3 +1377,70 @@ body.modo-claro .testimonio__autor { color: #007a5e; }
   0%, 100% { box-shadow: 0 0 25px rgba(242, 183, 5, 0.4); }
   50% { box-shadow: 0 0 45px rgba(242, 183, 5, 0.8); }
 }
+
+.codigo-descuento-wrap {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.codigo-descuento-wrap input {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.boton-aplicar {
+  padding: 0 22px;
+  background: var(--menta);
+  color: #0D0B1F;
+  border: 0;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.boton-aplicar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 255, 198, 0.4);
+}
+
+.boton-aplicar:disabled {
+  background: #4a4a4a;
+  color: #888;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.estado-codigo {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  padding: 10px 14px;
+  border-radius: 6px;
+  display: none;
+}
+
+.estado-codigo.valido {
+  display: block;
+  background: rgba(0, 255, 198, 0.12);
+  border-left: 3px solid var(--menta);
+  color: var(--crema);
+}
+
+.estado-codigo.invalido {
+  display: block;
+  background: rgba(255, 92, 92, 0.12);
+  border-left: 3px solid #ff5c5c;
+  color: var(--crema);
+}
+
+.estado-codigo.usado {
+  display: block;
+  background: rgba(242, 183, 5, 0.1);
+  border-left: 3px solid var(--dorado);
+  color: var(--secundario);
+}
