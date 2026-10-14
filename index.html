@@ -12,12 +12,32 @@
 <body>
 
   <!-- PANTALLA DE ERROR INICIAL -->
+    <!-- PANTALLA DE ERROR INICIAL -->
   <div id="pantalla-error" class="pantalla-error">
     <div class="scanlines" aria-hidden="true"></div>
-    <p class="error-codigo mono">ERROR_0x404 // NEGOCIO_NO_ENCONTRADO</p>
+    <div class="ruido" aria-hidden="true"></div>
+
+    <div class="terminal-hackeo">
+      <div class="terminal-hackeo__barra">
+        <span></span><span></span><span></span>
+        <span class="terminal-hackeo__titulo mono">root@miel-morir-sonando:~$</span>
+      </div>
+      <div class="terminal-hackeo__cuerpo mono">
+        <p><span class="prompt">&gt;</span> <span id="linea-1"></span><span class="cursor" id="cursor-1">█</span></p>
+        <p><span class="prompt">&gt;</span> <span id="linea-2"></span><span class="cursor" id="cursor-2">█</span></p>
+        <p><span class="prompt">&gt;</span> <span id="linea-3"></span><span class="cursor" id="cursor-3">█</span></p>
+        <p class="terminal-hackeo__progreso">
+          <span class="prompt">&gt;</span>
+          <span class="barra-progreso" id="barra-progreso"></span>
+          <span id="porcentaje-progreso">0%</span>
+        </p>
+      </div>
+    </div>
+
     <h1 class="glitch" data-text="ESTA REPOSTERÍA">ESTA REPOSTERÍA</h1>
     <h2 class="glitch-sub" data-text="YA NO EXISTE.">YA NO EXISTE.</h2>
     <p class="error-texto">... o eso es lo que alguien quiere que creas.</p>
+
     <button id="boton-recuperar" class="boton-recuperar" type="button">
       ⟳ RECUPERAR SISTEMA
     </button>
