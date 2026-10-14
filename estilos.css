@@ -1202,3 +1202,144 @@ body.modo-claro .hero__fondo::after {
 .revelacion.visible .pista {
   opacity: 1;
 }
+
+/* ============ FAVORITOS DE LA CASA ============ */
+.favoritos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 22px;
+  margin-top: 40px;
+}
+
+.favorito {
+  padding: 32px 22px;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.favorito::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--dorado), var(--menta));
+}
+
+.favorito:hover {
+  transform: translateY(-8px);
+  border-color: var(--dorado);
+  box-shadow: 0 12px 30px rgba(242, 183, 5, 0.15);
+}
+
+.favorito__emoji {
+  font-size: 3.5rem;
+  margin-bottom: 15px;
+  transition: transform 0.3s;
+  display: inline-block;
+}
+
+.favorito:hover .favorito__emoji {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+.favorito h3 {
+  color: var(--dorado);
+  margin: 10px 0;
+  font-size: 1.15rem;
+}
+
+.favorito p {
+  color: var(--secundario);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.favorito__precio {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(242, 183, 5, 0.12);
+  border: 1px solid var(--dorado);
+  border-radius: 20px;
+  color: var(--dorado);
+  font-weight: bold;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+/* ============ TESTIMONIOS ============ */
+.testimonios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 40px;
+}
+
+.testimonio {
+  padding: 28px;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--dorado);
+  border-radius: 10px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.testimonio:hover {
+  transform: translateX(6px);
+  border-left-color: var(--menta);
+}
+
+.testimonio__texto {
+  font-style: italic;
+  color: var(--crema);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.testimonio__texto::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  top: -10px;
+  font-size: 3rem;
+  color: var(--dorado);
+  opacity: 0.4;
+  font-family: Georgia, serif;
+}
+
+.testimonio__autor {
+  color: var(--menta);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 900px) {
+  .testimonios { grid-template-columns: 1fr; }
+}
+
+/* Modo claro: favoritos y testimonios */
+body.modo-claro .favorito {
+  background: #ffffff;
+  border-color: rgba(184, 119, 10, 0.25);
+}
+
+body.modo-claro .favorito h3 { color: #b8770a; }
+
+body.modo-claro .testimonio {
+  background: #ffffff;
+  border-color: rgba(184, 119, 10, 0.25);
+  border-left-color: #b8770a;
+}
+
+body.modo-claro .testimonio__texto { color: #2a1f14; }
+
+body.modo-claro .testimonio__autor { color: #007a5e; }
