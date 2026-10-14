@@ -587,13 +587,76 @@ button, input { font: inherit; }
 body.modo-claro {
   --fondo: #fdfaf3;
   --panel: #ffffff;
-  --texto: #1a1530;
-  --secundario: #5a5470;
-  --borde: rgba(139, 69, 19, 0.25);
+  --texto: #2a1f14;
+  --secundario: #6b5744;
+  --crema: #2a1f14;         /* antes era claro, ahora oscuro para que se lea */
+  --dorado: #b8770a;        /* dorado más oscuro, contraste con blanco */
+  --menta: #007a5e;         /* menta oscura para el modo claro */
+  --borde: rgba(139, 69, 19, 0.3);
 }
 
 body.modo-claro .cabecera {
   background: rgba(253, 250, 243, 0.95);
+  border-bottom: 1px solid rgba(184, 119, 10, 0.3);
+}
+
+body.modo-claro .logo__texto,
+body.modo-claro .pie__marca {
+  color: #b8770a;
+}
+
+body.modo-claro .hero__intro,
+body.modo-claro .seccion__intro {
+  color: #4a3826;
+}
+
+body.modo-claro .hero__titulo {
+  color: #2a1f14;
+}
+
+body.modo-claro .destello {
+  color: #b8770a;
+  text-shadow: 0 0 20px rgba(184, 119, 10, 0.3);
+}
+
+body.modo-claro .tarjeta {
+  background: #ffffff;
+  border-color: rgba(184, 119, 10, 0.25);
+}
+
+body.modo-claro .tarjeta h3 {
+  color: #b8770a;
+}
+
+body.modo-claro .banner__frase {
+  color: #2a1f14;
+}
+
+body.modo-claro .banner__autor {
+  color: #8a5a08;
+}
+
+body.modo-claro .pie {
+  background: #f5efe4;
+}
+
+body.modo-claro .pie__texto,
+body.modo-claro .pie a {
+  color: #4a3826;
+}
+
+body.modo-claro .hero__fondo {
+  opacity: 0.35;
+}
+
+body.modo-claro .hero__fondo::after {
+  background: linear-gradient(
+    90deg,
+    #fdfaf3 0%,
+    rgba(253, 250, 243, 0.9) 40%,
+    rgba(253, 250, 243, 0.4) 75%,
+    rgba(253, 250, 243, 0.6) 100%
+  );
 }
 
 /* ============ RESPONSIVE ============ */
