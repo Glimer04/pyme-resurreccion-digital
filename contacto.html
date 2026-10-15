@@ -3,8 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pide tu bizcocho, brownie o postre frío en Miel &amp; Morir Soñando. Formulario con fecha de entrega, mapa y pruebas del incidente.">
+
   <title>Pedidos y Evidencias | Miel &amp; Morir Soñando</title>
+  <meta name="description" content="Haz tu pedido en Miel &amp; Morir Soñando con fecha de entrega, varios productos y código de descuento. Conoce las pruebas del incidente.">
+  <meta name="author" content="Glimer04">
+  <meta name="keywords" content="pedidos repostería, entrega a domicilio Santo Domingo, bizcochos por encargo">
+  <meta name="theme-color" content="#0D0B1F">
+  <link rel="canonical" href="https://glimer04.github.io/pyme-resurreccion-digital/contacto.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://glimer04.github.io/pyme-resurreccion-digital/contacto.html">
+  <meta property="og:title" content="Pedidos | Miel &amp; Morir Soñando">
+  <meta property="og:description" content="Haz tu pedido con fecha de entrega, varios productos y código de descuento.">
+  <meta property="og:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+  <meta property="og:image:alt" content="Fénix dorado emergiendo de un bizcocho de miel">
+  <meta property="og:locale" content="es_DO">
+  <meta property="og:site_name" content="Miel &amp; Morir Soñando">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pedidos | Miel &amp; Morir Soñando">
+  <meta name="twitter:description" content="Haz tu pedido con fecha de entrega, varios productos y código de descuento.">
+  <meta name="twitter:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+
   <link rel="icon" href="img/logo-miel.png" type="image/png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="estilos.css">
@@ -16,8 +36,8 @@
   <div id="sitio">
 
     <header class="cabecera">
-      <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+      <a href="index.html" class="logo" aria-label="Miel &amp; Morir Soñando — Inicio">
+        <img src="img/logo-miel.png" alt="Logo de Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
         <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
@@ -27,13 +47,14 @@
         <a href="contacto.html" aria-current="page">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button"
+              aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
 
-      <!-- HERO CONTACTO -->
-      <section class="hero hero--catalogo">
+      <!-- HERO CONTACTO con patrón binario -->
+      <section class="hero hero--catalogo hero--binario">
         <div class="hero__contenido">
           <p class="etiqueta mono">● ARCHIVO_003 // EVIDENCIA DIGITAL</p>
           <h1 class="hero__titulo">
@@ -61,30 +82,24 @@
           <article class="tarjeta tarjeta--prueba">
             <span class="tarjeta__numero mono">PRUEBA 01</span>
             <h3>La web desaparecida</h3>
-            <p>
-              Registro narrativo: nuestro dominio dejó de responder a las 23:47.
-              El hosting reportó "cuenta inexistente" al día siguiente.
-            </p>
+            <p>Registro narrativo: nuestro dominio dejó de responder a las 23:47.
+               El hosting reportó "cuenta inexistente" al día siguiente.</p>
             <p class="tarjeta__meta mono">12/03/2026 · 23:47</p>
           </article>
 
           <article class="tarjeta tarjeta--prueba">
             <span class="tarjeta__numero mono">PRUEBA 02</span>
             <h3>Perfiles inaccesibles</h3>
-            <p>
-              Instagram y Facebook mostraron "perfil no disponible"
-              durante 48 horas. Recuperamos acceso tras verificación manual.
-            </p>
+            <p>Instagram y Facebook mostraron "perfil no disponible"
+               durante 48 horas. Recuperamos acceso tras verificación manual.</p>
             <p class="tarjeta__meta mono">13/03/2026 · 08:15</p>
           </article>
 
           <article class="tarjeta tarjeta--prueba">
             <span class="tarjeta__numero mono">PRUEBA 03</span>
             <h3>El mensaje del USB</h3>
-            <p>
-              "Tu negocio ha sido borrado de la existencia digital.
-              Si quieres recuperarlo, deberás reinventarlo."
-            </p>
+            <p>"Tu negocio ha sido borrado de la existencia digital.
+               Si quieres recuperarlo, deberás reinventarlo."</p>
             <p class="tarjeta__meta mono">14/03/2026 · 10:00</p>
           </article>
         </div>
@@ -133,7 +148,6 @@
               <option value="Cajita Regalo Premium">Cajita Regalo Premium — RD$1,600</option>
             </select>
 
-            <!-- Contenedor para productos adicionales -->
             <div id="productos-adicionales" class="productos-adicionales"></div>
 
             <button type="button" id="agregar-producto" class="boton-agregar">
@@ -197,18 +211,14 @@
           <ul>
             <li>
               <a href="https://wa.me/18095550123?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20Miel%20%26%20Morir%20So%C3%B1ando"
-                 target="_blank" rel="noopener">
-                📱 WhatsApp: +1 (809) 555-0123
-              </a>
+                 target="_blank" rel="noopener">📱 WhatsApp: +1 (809) 555-0123</a>
             </li>
             <li>
               <a href="mailto:hola@mielmorirsonando.do?subject=Pedido%20Miel%20%26%20Morir%20So%C3%B1ando">
                 ✉️ hola@mielmorirsonando.do
               </a>
             </li>
-            <li>
-              <a href="tel:+18095550123">☎️ +1 (809) 555-0123</a>
-            </li>
+            <li><a href="tel:+18095550123">☎️ +1 (809) 555-0123</a></li>
             <li>Santo Domingo, República Dominicana</li>
           </ul>
         </div>
@@ -224,23 +234,24 @@
 
   </div>
 
-  <!-- EASTER EGG -->
-  <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
+  <button id="boton-secreto" class="boton-secreto" type="button"
+          aria-label="Buscar mensaje secreto">?</button>
 
-  <!-- CHATBOT MIEL -->
-  <section id="asistente" class="asistente" aria-label="Asistente virtual">
+  <section id="asistente" class="asistente" aria-label="Asistente virtual Miel">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
       <p class="mensaje-bot">¡Hola! Soy Miel 🐝 ¿Necesitas ayuda con tu pedido?</p>
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: pedido, entrega, precio..." autocomplete="off" required>
+      <input id="chat-entrada" type="text" placeholder="Escribe: pedido, entrega, precio..."
+             autocomplete="off" required>
       <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+  <button id="boton-chat" class="boton-chat" type="button"
+          aria-label="Abrir asistente virtual" aria-expanded="false">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
     </svg>
