@@ -13,7 +13,7 @@
     5. Chatbot "Miel" (respuestas por palabras clave)
     6. Filtros del catálogo (todos / bizcocho / brownie / frío / caja)
     7. Cotizador en línea (precio en RD$ + guardado para pedido)
-    8. Formulario de pedidos (validación, código, WhatsApp)
+    8. Formulario de pedidos (validación, varios productos, WhatsApp)
     9. Mapa interactivo (Leaflet + OpenStreetMap)
    10. Arranque (llama a todos los módulos)
    ============================================================== */
@@ -21,19 +21,15 @@
   'use strict';
 
   /* ============================================================
-     0. CONFIGURACIÓN 
+     0. CONFIGURACIÓN Y CATÁLOGO
      ============================================================ */
   const CONFIG = {
-    // Número de WhatsApp: código de país + número, sin + ni espacios.
-    // Es un número de ejemplo: cámbialo por uno real si quieres probarlo.
     whatsapp: '18095550123',
     codigo: 'RESURGIR20',
     descuento: 0.2,
     taller: [18.4861, -69.9312]
   };
 
-  // Fuente única de precios para el chatbot y el pedido.
-  // Debe coincidir con los precios de servicios.html.
   const CATALOGO = {
     'Bizcocho de Miel': 1200,
     'Bizcocho Personalizado': 1500,
@@ -50,20 +46,18 @@
      ============================================================ */
   function $(id) { return document.getElementById(id); }
 
-  // Acceso seguro a localStorage / sessionStorage (pueden fallar en modo privado)
   const almacen = {
     leer: function (tipo, clave) {
       try { return window[tipo].getItem(clave); } catch (e) { return null; }
     },
     guardar: function (tipo, clave, valor) {
-      try { window[tipo].setItem(clave, valor); } catch (e) { /* sin almacenamiento */ }
+      try { window[tipo].setItem(clave, valor); } catch (e) {}
     },
     borrar: function (tipo, clave) {
-      try { window[tipo].removeItem(clave); } catch (e) { /* sin almacenamiento */ }
+      try { window[tipo].removeItem(clave); } catch (e) {}
     }
   };
 
-  // Crea un elemento con texto seguro (textContent, nunca innerHTML)
   function nodo(etiqueta, texto, atributos) {
     const n = document.createElement(etiqueta);
     if (texto) n.textContent = texto;
@@ -77,7 +71,6 @@
     return 'RD$' + Math.round(numero).toLocaleString('en-US');
   }
 
-  // Minúsculas y sin acentos, para que "envío" y "envio" sean lo mismo
   function normalizar(texto) {
     return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   }
@@ -96,8 +89,7 @@
   }
 
   /* ============================================================
-     2. MODO CLARO / OSCURO (se recuerda entre páginas)
-     El sitio nace oscuro porque es parte de su identidad visual.
+     2. MODO CLARO / OSCURO
      ============================================================ */
   function iniciarTema() {
     if (almacen.leer('localStorage', 'tema') === 'claro') {
@@ -125,10 +117,7 @@
   }
 
   /* ============================================================
-     3. PANTALLA DE ERROR → "RECUPERAR SISTEMA"
-     - Se muestra una vez por sesión (o siempre con ?intro=1)
-     - Se puede saltar con el botón o con la tecla Esc
-     - Respeta "reducir movimiento" del sistema
+     3. PANTALLA DE ERROR / INTRO
      ============================================================ */
   const LINEAS_TERMINAL = [
     'Iniciando protocolo de búsqueda...',
@@ -168,13 +157,13 @@
       }
     }
 
-    // Visitante que ya vio la intro en esta sesión: directo al sitio
+    // Si ya vio la intro y no se fuerza, saltarla
     if (yaVista && !forzada) {
       entrar(false);
       return;
     }
 
-    // Botón "Saltar" (se crea solo si no existe en el HTML)
+    // Botón "Saltar intro"
     if (!$('boton-saltar')) {
       const saltar = nodo('button', 'Saltar intro ▸', {
         id: 'boton-saltar', type: 'button', 'class': 'boton-saltar mono'
@@ -207,7 +196,6 @@
       porcentaje.style.fontWeight = 'bold';
     }
 
-    // Escribe una línea letra por letra
     function escribir(idElemento, texto, alTerminar) {
       const elemento = $(idElemento);
       if (!elemento) { alTerminar(); return; }
@@ -239,7 +227,6 @@
 
         if (progreso < 100) { programar(paso, 110); return; }
 
-        // Pausa dramática antes del fallo
         programar(function () {
           marcarFallo(barra, porcentaje);
           programar(revelar, 700);
@@ -265,7 +252,6 @@
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reducirMovimiento) {
-      // Sin animaciones: se muestra el estado final de golpe
       LINEAS_TERMINAL.forEach(function (texto, i) {
         const el = $('linea-' + (i + 1));
         if (el) el.textContent = texto;
@@ -280,24 +266,22 @@
     } else {
       programar(secuencia, 300);
     }
-   
-    // Enlace "Repetir la intro" del footer: fuerza recarga limpia
-    const enlaceRepetir = document.getElementById('repetir-intro');
-    if (enlaceRepetir) {
-      enlaceRepetir.addEventListener('click', function (e) {
-        e.preventDefault();
-        // Borra la marca de "intro vista" y fuerza recarga sin caché
-        almacen.borrar('sessionStorage', 'intro_vista');
-        window.location.href = 'index.html?intro=1&t=' + Date.now();
-      });
-    }
-    
+  }
+
+  /* Enlace "Repetir la intro" — funciona desde cualquier página */
+  function iniciarEnlaceRepetir() {
+    const enlace = $('repetir-intro');
+    if (!enlace) return;
+
+    enlace.addEventListener('click', function (e) {
+      e.preventDefault();
+      almacen.borrar('sessionStorage', 'intro_vista');
+      window.location.href = 'index.html?intro=1&t=' + Date.now();
+    });
   }
 
   /* ============================================================
-     4. EASTER EGG — RECETA SECRETA
-     Se abre con el botón "?" o escribiendo la palabra "miel"
-     en cualquier parte de la página (fuera de un campo de texto).
+     4. EASTER EGG
      ============================================================ */
   function iniciarSecreto() {
     const boton = $('boton-secreto');
@@ -328,7 +312,6 @@
       contenido.appendChild(cerrar);
 
       dialogo.appendChild(contenido);
-      // Clic fuera de la caja = cerrar
       dialogo.addEventListener('click', function (e) { if (e.target === dialogo) dialogo.close(); });
       document.body.appendChild(dialogo);
     }
@@ -345,21 +328,18 @@
 
     if (boton) boton.addEventListener('click', abrir);
 
-    // Segunda forma (oculta) de encontrarlo: escribir "miel"
-    let secuencia = '';
+    let secuenciaTeclado = '';
     document.addEventListener('keydown', function (e) {
       const destino = e.target && e.target.tagName;
       if (destino === 'INPUT' || destino === 'TEXTAREA' || destino === 'SELECT') return;
       if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
-      secuencia = (secuencia + e.key.toLowerCase()).slice(-4);
-      if (secuencia === 'miel') { secuencia = ''; abrir(); }
+      secuenciaTeclado = (secuenciaTeclado + e.key.toLowerCase()).slice(-4);
+      if (secuenciaTeclado === 'miel') { secuenciaTeclado = ''; abrir(); }
     });
   }
 
   /* ============================================================
-     5. CHATBOT "MIEL"
-     Responde por palabras clave (no es IA). Ignora acentos.
-     El orden de las reglas importa: gana la primera que coincida.
+     5. CHATBOT MIEL
      ============================================================ */
   function listaPrecios() {
     return Object.keys(CATALOGO).map(function (nombre) {
@@ -368,91 +348,34 @@
   }
 
   const REGLAS_CHAT = [
-    {
-      claves: ['historia', 'misterio', 'borraron', 'usb', 'expediente', 'que paso', '12 de marzo'],
-      respuesta: function () {
-        return 'El 12 de marzo nos borraron de Internet, pero volvimos más dulces. La historia completa está en el Inicio 🐝';
-      }
-    },
-    {
-      claves: ['seguridad', 'proteg', 'respaldo', 'hack', 'ataque', 'escudo', 'resistent'],
-      respuesta: function () {
-        return 'Ahora el sitio vive en GitHub (cada cambio queda respaldado) y seguimos un protocolo anti-borrado: verificación en dos pasos, canales alternos y plan de recuperación. Míralo en "Escudo anti-borrado", en el Inicio 🔐';
-      }
-    },
-    {
-      claves: ['descuento', 'codigo', 'promo', 'oferta', 'cupon'],
-      respuesta: function () {
-        return 'Hay un código de bienvenida para tu primer pedido. Pista: en esta web hay un botón "?" escondido 🐝';
-      }
-    },
-    {
-      claves: ['precio', 'cuanto', 'cuesta', 'costo', 'valor', 'tarifa'],
-      respuesta: function () {
-        return 'Precios desde: ' + listaPrecios() + '. Puedes calcular tu pedido en el cotizador del Catálogo.';
-      }
-    },
-    {
-      claves: ['entrega', 'envio', 'domicilio', 'delivery', 'despacho', 'express'],
-      respuesta: function () {
-        return 'Entregamos en Santo Domingo, de lunes a sábado. Elige la fecha en el formulario con al menos 48 horas de anticipación; por RD$400 extra puedes fijar el horario de entrega 🚚';
-      }
-    },
-    {
-      claves: ['donde', 'ubicacion', 'direccion', 'taller', 'mapa', 'horario', 'abren', 'abierto'],
-      respuesta: function () {
-        return 'Estamos en Calle Duarte #123, Zona Colonial, Santo Domingo. Abrimos de lunes a sábado, de 9 AM a 7 PM. El mapa está en la página de Pedidos 📍';
-      }
-    },
-    {
-      claves: ['pedido', 'pedir', 'comprar', 'ordenar', 'encargar', 'reservar', 'cotiz'],
-      respuesta: function () {
-        return 'Puedes cotizar en el Catálogo y luego entrar a Pedidos para llenar el formulario con tu fecha de entrega. Te confirmamos por WhatsApp 📱';
-      }
-    },
-    {
-      claves: ['bizcocho', 'pastel', 'torta', 'cumple', 'boda'],
-      respuesta: function () {
-        return 'Tenemos el Bizcocho de Miel (desde ' + formatoRD(CATALOGO['Bizcocho de Miel']) +
-          ') y el Bizcocho Personalizado (desde ' + formatoRD(CATALOGO['Bizcocho Personalizado']) +
-          '), ideal para cumpleaños y bodas 🍰';
-      }
-    },
-    {
-      claves: ['brownie', 'blondie', 'chocolate'],
-      respuesta: function () {
-        return 'El Brownie Fudge (chocolate 70%, nueces y sal marina) va desde ' + formatoRD(CATALOGO['Brownie Fudge']) +
-          ' y el Blondie de Coco desde ' + formatoRD(CATALOGO['Blondie de Coco']) + ' 🍫';
-      }
-    },
-    {
-      claves: ['flan', 'cheesecake', 'mango', 'frio', 'coco'],
-      respuesta: function () {
-        return 'En postres fríos tenemos Flan de Coco (desde ' + formatoRD(CATALOGO['Flan de Coco']) +
-          ') y Cheesecake de Mango (desde ' + formatoRD(CATALOGO['Cheesecake de Mango']) + ') 🍮';
-      }
-    },
-    {
-      claves: ['caja', 'cajita', 'regalo', 'obsequio'],
-      respuesta: function () {
-        return 'La Cajita Petit trae 6 mini postres (desde ' + formatoRD(CATALOGO['Cajita Regalo Petit']) +
-          ') y la Premium trae 12 con tarjeta y lazo dorado (desde ' + formatoRD(CATALOGO['Cajita Regalo Premium']) + ') 🎁';
-      }
-    },
-    {
-      claves: ['catalogo', 'menu', 'productos', 'venden', 'tienen'],
-      respuesta: function () {
-        return 'Hacemos bizcochos, brownies, postres fríos y cajitas de regalo. Mira el Catálogo completo o dime el nombre de un postre 🐝';
-      }
-    },
-    {
-      claves: ['gracias', 'genial', 'perfecto'],
-      respuesta: function () { return '¡Con gusto! Aquí estaré si se te antoja algo dulce 🐝'; }
-    },
-    {
-      claves: ['hola', 'buenas', 'saludos'],
-      respuesta: function () { return '¡Hola! Soy Miel 🐝 ¿Buscas algo dulce para hoy?'; }
-    }
+    { claves: ['historia', 'misterio', 'borraron', 'usb', 'expediente', 'que paso', '12 de marzo'],
+      respuesta: function () { return 'El 12 de marzo nos borraron de Internet, pero volvimos más dulces. La historia completa está en el Inicio 🐝'; } },
+    { claves: ['seguridad', 'proteg', 'respaldo', 'hack', 'ataque', 'escudo', 'resistent'],
+      respuesta: function () { return 'Ahora el sitio vive en GitHub (cada cambio queda respaldado) y seguimos un protocolo anti-borrado. Míralo en "Compromiso con el cliente", en el Inicio 🔐'; } },
+    { claves: ['descuento', 'codigo', 'promo', 'oferta', 'cupon'],
+      respuesta: function () { return 'Hay un código de bienvenida para tu primer pedido. Pista: en esta web hay un botón "?" escondido 🐝'; } },
+    { claves: ['precio', 'cuanto', 'cuesta', 'costo', 'valor', 'tarifa'],
+      respuesta: function () { return 'Precios desde: ' + listaPrecios() + '. Puedes calcular tu pedido en el cotizador del Catálogo.'; } },
+    { claves: ['entrega', 'envio', 'domicilio', 'delivery', 'despacho', 'express'],
+      respuesta: function () { return 'Entregamos en Santo Domingo, de lunes a sábado. Elige la fecha en el formulario con al menos 48 horas de anticipación 🚚'; } },
+    { claves: ['donde', 'ubicacion', 'direccion', 'taller', 'mapa', 'horario', 'abren', 'abierto'],
+      respuesta: function () { return 'Estamos en Calle Duarte #123, Zona Colonial, Santo Domingo. Abrimos de lunes a sábado, de 9 AM a 7 PM. El mapa está en la página de Pedidos 📍'; } },
+    { claves: ['pedido', 'pedir', 'comprar', 'ordenar', 'encargar', 'reservar', 'cotiz'],
+      respuesta: function () { return 'Puedes cotizar en el Catálogo y luego entrar a Pedidos para llenar el formulario con tu fecha de entrega. Te confirmamos por WhatsApp 📱'; } },
+    { claves: ['bizcocho', 'pastel', 'torta', 'cumple', 'boda'],
+      respuesta: function () { return 'Tenemos el Bizcocho de Miel (desde ' + formatoRD(CATALOGO['Bizcocho de Miel']) + ') y el Bizcocho Personalizado (desde ' + formatoRD(CATALOGO['Bizcocho Personalizado']) + '), ideal para cumpleaños y bodas 🍰'; } },
+    { claves: ['brownie', 'blondie', 'chocolate'],
+      respuesta: function () { return 'El Brownie Fudge (chocolate 70%, nueces y sal marina) va desde ' + formatoRD(CATALOGO['Brownie Fudge']) + ' y el Blondie de Coco desde ' + formatoRD(CATALOGO['Blondie de Coco']) + ' 🍫'; } },
+    { claves: ['flan', 'cheesecake', 'mango', 'frio', 'coco'],
+      respuesta: function () { return 'En postres fríos tenemos Flan de Coco (desde ' + formatoRD(CATALOGO['Flan de Coco']) + ') y Cheesecake de Mango (desde ' + formatoRD(CATALOGO['Cheesecake de Mango']) + ') 🍮'; } },
+    { claves: ['caja', 'cajita', 'regalo', 'obsequio'],
+      respuesta: function () { return 'La Cajita Petit trae 6 mini postres (desde ' + formatoRD(CATALOGO['Cajita Regalo Petit']) + ') y la Premium trae 12 con tarjeta y lazo dorado (desde ' + formatoRD(CATALOGO['Cajita Regalo Premium']) + ') 🎁'; } },
+    { claves: ['catalogo', 'menu', 'productos', 'venden', 'tienen'],
+      respuesta: function () { return 'Hacemos bizcochos, brownies, postres fríos y cajitas de regalo. Mira el Catálogo completo o dime el nombre de un postre 🐝'; } },
+    { claves: ['gracias', 'genial', 'perfecto'],
+      respuesta: function () { return '¡Con gusto! Aquí estaré si se te antoja algo dulce 🐝'; } },
+    { claves: ['hola', 'buenas', 'saludos'],
+      respuesta: function () { return '¡Hola! Soy Miel 🐝 ¿Buscas algo dulce para hoy?'; } }
   ];
 
   const RESPUESTA_DEFECTO = 'Aún estoy aprendiendo 🐝 Prueba con: catálogo, precios, entrega, pedido, seguridad o historia.';
@@ -541,7 +464,6 @@
   /* ============================================================
      7. COTIZADOR EN LÍNEA
      ============================================================ */
-
   function linea(etiqueta, valor, resaltar) {
     const div = nodo('div');
     div.appendChild(document.createTextNode(etiqueta));
@@ -555,10 +477,10 @@
     const salida = $('resultado-cotizador');
     if (!formulario || !salida) return;
 
-    // Botones "Cotizar" de cada producto: preseleccionan el producto
     document.querySelectorAll('.boton-cotizar').forEach(function (boton) {
       boton.addEventListener('click', function () {
         const select = $('producto-cotizar');
+        if (!select) return;
         const nombre = boton.dataset.producto;
         for (let i = 0; i < select.options.length; i++) {
           if (select.options[i].value.indexOf(nombre + '|') === 0) {
@@ -571,7 +493,7 @@
       });
     });
 
-        formulario.addEventListener('submit', function (evento) {
+    formulario.addEventListener('submit', function (evento) {
       evento.preventDefault();
 
       const selProducto = $('producto-cotizar');
@@ -606,7 +528,6 @@
       salida.appendChild(nodo('br'));
       salida.appendChild(lineaAviso);
 
-      // Guardar la cotización para precargarla en el formulario de pedidos
       almacen.guardar('localStorage', 'miel_cotizacion', JSON.stringify({
         producto: nombre,
         nota: 'Cotización: ' + tamanoTexto + ' · ' + extraTexto + ' · Total estimado ' + formatoRD(total)
@@ -615,31 +536,34 @@
       const irPedido = $('boton-ir-pedido');
       if (irPedido) irPedido.style.display = 'inline-block';
     });
+  }
 
   /* ============================================================
-     8. FORMULARIO DE PEDIDOS (validación, descuento, WhatsApp)
+     8. FORMULARIO DE PEDIDOS (con varios productos)
      ============================================================ */
   function iniciarPedido() {
     const formulario = $('formulario-contacto');
     const estado = $('estado-formulario');
     if (!formulario || !estado) return;
 
-    const selProducto = $('producto-contacto');
     const inputFecha = $('fecha-entrega');
     const inputTelefono = $('telefono');
-    const inputNotas = $('notas');               // opcional (textarea)
     const inputCodigo = $('codigo-descuento');
     const botonAplicar = $('aplicar-codigo');
     const estadoCodigo = $('estado-codigo');
 
+    const contenedorAdicionales = $('productos-adicionales');
+    const botonAgregar = $('agregar-producto');
+
     const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-    // ---- Precargar lo cotizado en el catálogo ----
+    // Precargar cotización desde el catálogo
     const cotizacion = almacen.leer('localStorage', 'miel_cotizacion');
     if (cotizacion) {
       try {
         const datos = JSON.parse(cotizacion);
-        if (selProducto) {
+        const selProducto = $('producto-contacto');
+        if (selProducto && datos.producto) {
           for (let i = 0; i < selProducto.options.length; i++) {
             if (selProducto.options[i].value === datos.producto) {
               selProducto.selectedIndex = i;
@@ -647,25 +571,65 @@
             }
           }
         }
+        const inputNotas = $('notas');
         if (inputNotas && datos.nota) inputNotas.value = datos.nota;
-      } catch (e) { /* dato dañado: se ignora */ }
+      } catch (e) {}
       almacen.borrar('localStorage', 'miel_cotizacion');
     }
 
-    // ---- Fecha mínima: 2 días después de hoy (48 horas) ----
+    // Fecha mínima: 48 horas desde hoy
     const hoyMas2 = new Date();
     hoyMas2.setDate(hoyMas2.getDate() + 2);
     const fechaMinima = aISO(hoyMas2);
     if (inputFecha) inputFecha.min = fechaMinima;
 
-    // ---- Teléfono: solo números ----
+    // Teléfono: solo números
     if (inputTelefono) {
       inputTelefono.addEventListener('input', function (e) {
         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
       });
     }
 
-    // ---- Código de descuento (solo primer pedido) ----
+    // ---------- Multi-producto ----------
+    function crearFilaProducto() {
+      const fila = nodo('div', '', { 'class': 'producto-adicional' });
+
+      const select = nodo('select', '', {
+        'class': 'producto-adicional__select',
+        'aria-label': 'Producto adicional'
+      });
+      const vacio = nodo('option', '— Elige un producto —', { value: '' });
+      select.appendChild(vacio);
+      Object.keys(CATALOGO).forEach(function (nombre) {
+        const opt = nodo('option', nombre + ' (' + formatoRD(CATALOGO[nombre]) + ')', { value: nombre });
+        select.appendChild(opt);
+      });
+
+      const cantidad = nodo('input', '', {
+        type: 'number', min: '1', value: '1',
+        'class': 'producto-adicional__cantidad',
+        'aria-label': 'Cantidad'
+      });
+
+      const quitar = nodo('button', '✕', {
+        type: 'button', 'class': 'producto-adicional__quitar',
+        'aria-label': 'Quitar este producto'
+      });
+      quitar.addEventListener('click', function () { fila.remove(); });
+
+      fila.appendChild(select);
+      fila.appendChild(cantidad);
+      fila.appendChild(quitar);
+      return fila;
+    }
+
+    if (botonAgregar && contenedorAdicionales) {
+      botonAgregar.addEventListener('click', function () {
+        contenedorAdicionales.appendChild(crearFilaProducto());
+      });
+    }
+
+    // Código de descuento
     function codigoValido(valor) {
       return valor.trim().toUpperCase() === CONFIG.codigo;
     }
@@ -701,7 +665,6 @@
         }
       });
 
-      // Enter dentro del campo aplica el código en lugar de enviar el pedido
       inputCodigo.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -710,7 +673,6 @@
       });
     }
 
-    // ---- Mensajes de estado ----
     function mostrarError(mensaje, idCampo) {
       estado.className = 'estado-formulario error';
       estado.textContent = '⚠ ' + mensaje;
@@ -718,7 +680,6 @@
       if (campo) campo.focus();
     }
 
-    // ---- Envío ----
     formulario.addEventListener('submit', function (evento) {
       evento.preventDefault();
       estado.className = 'estado-formulario';
@@ -727,9 +688,10 @@
       const nombre = $('nombre').value.trim();
       const correo = $('correo').value.trim();
       const telefono = inputTelefono.value.replace(/\D/g, '');
-      const producto = selProducto.value;
+      const producto = $('producto-contacto').value;
       const fecha = inputFecha.value;
       const direccion = $('direccion').value.trim();
+      const inputNotas = $('notas');
       const notas = inputNotas ? inputNotas.value.trim() : '';
       const codigo = inputCodigo && !inputCodigo.disabled ? inputCodigo.value.trim() : '';
 
@@ -738,12 +700,8 @@
       if (telefono.length !== 10) return mostrarError('El teléfono debe tener 10 dígitos (ej: 8095550123).', 'telefono');
       if (!producto) return mostrarError('Selecciona un producto del catálogo.', 'producto-contacto');
       if (!fecha) return mostrarError('Debes elegir una fecha de entrega.', 'fecha-entrega');
-      if (fecha < fechaMinima) {
-        return mostrarError('La fecha de entrega debe ser al menos 48 horas después de hoy.', 'fecha-entrega');
-      }
-      if (new Date(fecha + 'T12:00:00').getDay() === 0) {
-        return mostrarError('Entregamos de lunes a sábado. Elige otra fecha.', 'fecha-entrega');
-      }
+      if (fecha < fechaMinima) return mostrarError('La fecha de entrega debe ser al menos 48 horas después de hoy.', 'fecha-entrega');
+      if (new Date(fecha + 'T12:00:00').getDay() === 0) return mostrarError('Entregamos de lunes a sábado. Elige otra fecha.', 'fecha-entrega');
       if (direccion.length < 8) return mostrarError('Por favor escribe una dirección más completa.', 'direccion');
 
       let aplicaDescuento = false;
@@ -754,10 +712,23 @@
         aplicaDescuento = true;
       }
 
+      // Recoger productos adicionales
+      const adicionales = [];
+      if (contenedorAdicionales) {
+        contenedorAdicionales.querySelectorAll('.producto-adicional').forEach(function (fila) {
+          const sel = fila.querySelector('.producto-adicional__select');
+          const cant = fila.querySelector('.producto-adicional__cantidad');
+          if (sel && sel.value) {
+            adicionales.push(sel.value + ' x' + (cant ? cant.value : 1));
+          }
+        });
+      }
+
       // Mensaje prellenado para WhatsApp
       const textoWhatsApp = [
         'Hola, quiero hacer un pedido en Miel & Morir Soñando:',
-        '• Producto: ' + producto,
+        '• Producto principal: ' + producto,
+        adicionales.length ? '• Productos adicionales: ' + adicionales.join(' · ') : '',
         '• Fecha de entrega: ' + formatearFecha(fecha),
         '• Dirección: ' + direccion,
         '• Nombre: ' + nombre,
@@ -768,14 +739,17 @@
 
       const enlaceWhatsApp = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(textoWhatsApp);
 
-      // Confirmación (todo con textContent: sin riesgo de inyección)
       estado.className = 'estado-formulario exito';
       estado.textContent = '';
 
       const l1 = nodo('div');
       l1.append('🍰 ¡Gracias, ', nodo('strong', nombre.split(' ')[0]), '!');
       const l2 = nodo('div');
-      l2.append('Tu pedido de ', nodo('strong', producto), ' fue registrado para el ' + formatearFecha(fecha) + '.');
+      l2.append('Tu pedido de ', nodo('strong', producto));
+      if (adicionales.length) {
+        l2.append(' (+' + adicionales.length + ' producto' + (adicionales.length > 1 ? 's' : '') + ' adicional' + (adicionales.length > 1 ? 'es' : '') + ')');
+      }
+      l2.append(' fue registrado para el ' + formatearFecha(fecha) + '.');
       estado.append(l1, l2);
 
       if (aplicaDescuento && CATALOGO[producto]) {
@@ -799,15 +773,15 @@
       }
 
       formulario.reset();
+      if (contenedorAdicionales) contenedorAdicionales.innerHTML = '';
       if (estadoCodigo) { estadoCodigo.className = 'estado-codigo'; estadoCodigo.textContent = ''; }
       if (aplicaDescuento) bloquearCodigo();
       estado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
   }
 
-
   /* ============================================================
-     9. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
+     9. MAPA INTERACTIVO (LEAFLET)
      ============================================================ */
   function iniciarMapa() {
     const contenedor = $('mapa');
@@ -847,6 +821,7 @@
      ============================================================ */
   iniciarTema();
   iniciarIntro();
+  iniciarEnlaceRepetir();
   iniciarSecreto();
   iniciarChat();
   iniciarFiltros();
