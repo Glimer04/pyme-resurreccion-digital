@@ -136,17 +136,28 @@ El cliente ve la versión simplificada de este protocolo en la sección **"Compr
 
 ```text
 pyme-resurreccion-digital/
-├── index.html          # Inicio: intro, historia, compromiso, favoritos, testimonios
-├── servicios.html      # Catálogo + cotizador
-├── contacto.html       # Pruebas del incidente + pedidos + mapa
-├── estilos.css         # Estilos de las 3 páginas
-├── script.js           # Lógica de las 3 páginas
-├── img/
-│   ├── logo-miel.png
-│   ├── hero-miel.jpg
-│   └── productos/      # 8 fotos de productos (.jpg optimizadas)
-├── LICENSE
-└── README.md
+│
+├── index.html                    # Inicio: intro, historia, compromiso, favoritos, testimonios
+├── servicios.html                # Catálogo de 8 productos + cotizador en línea
+├── contacto.html                 # Pruebas del incidente + formulario multi-producto + mapa
+├── estilos.css                   # Estilos compartidos por las 3 páginas
+├── script.js                     # Lógica compartida por las 3 páginas
+├── README.md                     # Documentación del proyecto
+├── LICENSE                       # Licencia MIT
+│
+└── img/
+    ├── logo-miel.png             # Logo oficial (marco dorado circular)
+    ├── hero-miel.jpg             # Imagen principal del hero (fénix dorado)
+    │
+    └── productos/
+        ├── producto-bizcocho-miel.jpg          # Bizcocho de Miel
+        ├── producto-bizcocho-personalizado.jpg # Bizcocho Personalizado
+        ├── producto-brownie-fudge.jpg          # Brownie Fudge
+        ├── producto-blondie-coco.jpg           # Blondie de Coco
+        ├── producto-flan-coco.jpg              # Flan de Coco
+        ├── producto-cheesecake-mango.jpg       # Cheesecake de Mango
+        ├── producto-caja-petit.jpg             # Cajita Regalo Petit
+        └── producto-caja-premium.jpg           # Cajita Regalo Premium
 
 ---
 
