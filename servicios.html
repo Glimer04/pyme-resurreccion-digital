@@ -3,8 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Catálogo reinventado de Miel &amp; Morir Soñando: bizcochos, brownies, postres fríos y cajitas de regalo. Cotiza en línea.">
+
+  <!-- SEO básico -->
   <title>Catálogo Reinventado | Miel &amp; Morir Soñando</title>
+  <meta name="description" content="Catálogo reinventado de Miel &amp; Morir Soñando: bizcochos artesanales, brownies, postres fríos y cajitas de regalo. Cotiza tu pedido en línea.">
+  <meta name="author" content="Glimer04">
+  <meta name="keywords" content="catálogo repostería, bizcochos dominicanos, brownies, postres fríos, cajitas regalo">
+  <meta name="theme-color" content="#0D0B1F">
+  <link rel="canonical" href="https://glimer04.github.io/pyme-resurreccion-digital/servicios.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://glimer04.github.io/pyme-resurreccion-digital/servicios.html">
+  <meta property="og:title" content="Catálogo Reinventado | Miel &amp; Morir Soñando">
+  <meta property="og:description" content="Bizcochos, brownies, postres fríos y cajitas de regalo. Cotiza en línea y pide con entrega a domicilio.">
+  <meta property="og:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+  <meta property="og:image:alt" content="Fénix dorado emergiendo de un bizcocho de miel">
+  <meta property="og:locale" content="es_DO">
+  <meta property="og:site_name" content="Miel &amp; Morir Soñando">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Catálogo Reinventado | Miel &amp; Morir Soñando">
+  <meta name="twitter:description" content="Bizcochos, brownies, postres fríos y cajitas de regalo. Cotiza en línea.">
+  <meta name="twitter:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+
   <link rel="icon" href="img/logo-miel.png" type="image/png">
   <link rel="stylesheet" href="estilos.css">
   <script src="script.js" defer></script>
@@ -14,8 +37,8 @@
   <div id="sitio">
 
     <header class="cabecera">
-      <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+      <a href="index.html" class="logo" aria-label="Miel &amp; Morir Soñando — Inicio">
+        <img src="img/logo-miel.png" alt="Logo de Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
         <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
@@ -25,7 +48,8 @@
         <a href="contacto.html">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button"
+              aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
@@ -56,11 +80,11 @@
 
         <!-- FILTROS -->
         <div class="filtros" role="group" aria-label="Filtros de catálogo">
-          <button class="filtro activo" data-filtro="todos" type="button">Todos</button>
-          <button class="filtro" data-filtro="bizcocho" type="button">Bizcochos</button>
-          <button class="filtro" data-filtro="brownie" type="button">Brownies</button>
-          <button class="filtro" data-filtro="frio" type="button">Postres fríos</button>
-          <button class="filtro" data-filtro="caja" type="button">Cajitas regalo</button>
+          <button class="filtro activo" data-filtro="todos" type="button" aria-pressed="true">Todos</button>
+          <button class="filtro" data-filtro="bizcocho" type="button" aria-pressed="false">Bizcochos</button>
+          <button class="filtro" data-filtro="brownie" type="button" aria-pressed="false">Brownies</button>
+          <button class="filtro" data-filtro="frio" type="button" aria-pressed="false">Postres fríos</button>
+          <button class="filtro" data-filtro="caja" type="button" aria-pressed="false">Cajitas regalo</button>
         </div>
 
         <!-- GRID DE PRODUCTOS -->
@@ -75,7 +99,9 @@
             <h3>Bizcocho de Miel</h3>
             <p>Bizcocho esponjoso bañado en miel pura dominicana, con merengue y cereza.</p>
             <p class="producto__precio">Desde RD$1,200</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Bizcocho de Miel" data-base="1200">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Bizcocho de Miel" data-base="1200"
+                    aria-label="Cotizar Bizcocho de Miel">
               Cotizar
             </button>
           </article>
@@ -89,7 +115,9 @@
             <h3>Bizcocho Personalizado</h3>
             <p>Elige sabor, relleno y decoración. Ideal para cumpleaños y bodas.</p>
             <p class="producto__precio">Desde RD$1,500</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Bizcocho Personalizado" data-base="1500">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Bizcocho Personalizado" data-base="1500"
+                    aria-label="Cotizar Bizcocho Personalizado">
               Cotizar
             </button>
           </article>
@@ -103,7 +131,9 @@
             <h3>Brownie Fudge</h3>
             <p>Brownie denso de chocolate 70%, con nueces y sal marina.</p>
             <p class="producto__precio">Desde RD$350</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Brownie Fudge" data-base="350">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Brownie Fudge" data-base="350"
+                    aria-label="Cotizar Brownie Fudge">
               Cotizar
             </button>
           </article>
@@ -117,7 +147,9 @@
             <h3>Blondie de Coco</h3>
             <p>Versión clara del brownie, con coco rallado y caramelo.</p>
             <p class="producto__precio">Desde RD$450</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Blondie de Coco" data-base="450">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Blondie de Coco" data-base="450"
+                    aria-label="Cotizar Blondie de Coco">
               Cotizar
             </button>
           </article>
@@ -131,7 +163,9 @@
             <h3>Flan de Coco</h3>
             <p>Flan cremoso dominicano con coco fresco y caramelo.</p>
             <p class="producto__precio">Desde RD$500</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Flan de Coco" data-base="500">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Flan de Coco" data-base="500"
+                    aria-label="Cotizar Flan de Coco">
               Cotizar
             </button>
           </article>
@@ -145,7 +179,9 @@
             <h3>Cheesecake de Mango</h3>
             <p>Cheesecake frío con mango dominicano y base de galleta.</p>
             <p class="producto__precio">Desde RD$550</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Cheesecake de Mango" data-base="550">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Cheesecake de Mango" data-base="550"
+                    aria-label="Cotizar Cheesecake de Mango">
               Cotizar
             </button>
           </article>
@@ -159,7 +195,9 @@
             <h3>Cajita Regalo Petit</h3>
             <p>6 mini postres surtidos: brownies, galletas y bombones.</p>
             <p class="producto__precio">Desde RD$800</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Cajita Regalo Petit" data-base="800">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Cajita Regalo Petit" data-base="800"
+                    aria-label="Cotizar Cajita Regalo Petit">
               Cotizar
             </button>
           </article>
@@ -173,7 +211,9 @@
             <h3>Cajita Regalo Premium</h3>
             <p>12 mini postres + tarjeta personalizada + lazo dorado.</p>
             <p class="producto__precio">Desde RD$1,600</p>
-            <button class="boton boton--primario boton-cotizar" type="button" data-producto="Cajita Regalo Premium" data-base="1600">
+            <button class="boton boton--primario boton-cotizar" type="button"
+                    data-producto="Cajita Regalo Premium" data-base="1600"
+                    aria-label="Cotizar Cajita Regalo Premium">
               Cotizar
             </button>
           </article>
@@ -190,7 +230,7 @@
             Elige un producto, tamaño y extras. Te damos un precio estimado al instante.
           </p>
 
-          <form id="cotizador" class="cotizador">
+          <form id="cotizador" class="cotizador" aria-label="Cotizador de precios">
             <label for="producto-cotizar">Producto</label>
             <select id="producto-cotizar" name="producto" required>
               <option value="">— Elige un producto —</option>
@@ -222,10 +262,11 @@
             <button type="submit" class="boton boton--primario">Calcular precio</button>
           </form>
 
-          <div id="resultado-cotizador" class="resultado-cotizador" aria-live="polite"></div>
+          <div id="resultado-cotizador" class="resultado-cotizador" aria-live="polite" role="status"></div>
 
           <a id="boton-ir-pedido" class="boton boton--primario boton-ir-pedido"
-             href="contacto.html" style="display: none;">
+             href="contacto.html" style="display: none;"
+             aria-label="Ir a hacer el pedido">
             🛒 IR A HACER MI PEDIDO
           </a>
         </div>
@@ -250,8 +291,20 @@
         <div>
           <h4>Contacto</h4>
           <ul>
-            <li><a href="mailto:hola@mielmorirsonando.do">hola@mielmorirsonando.do</a></li>
-            <li><a href="tel:+18095550123">+1 (809) 555-0123</a></li>
+            <li>
+              <a href="https://wa.me/18095550123?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20Miel%20%26%20Morir%20So%C3%B1ando"
+                 target="_blank" rel="noopener">
+                📱 WhatsApp: +1 (809) 555-0123
+              </a>
+            </li>
+            <li>
+              <a href="mailto:hola@mielmorirsonando.do?subject=Pedido%20Miel%20%26%20Morir%20So%C3%B1ando">
+                ✉️ hola@mielmorirsonando.do
+              </a>
+            </li>
+            <li>
+              <a href="tel:+18095550123">☎️ +1 (809) 555-0123</a>
+            </li>
             <li>Santo Domingo, República Dominicana</li>
           </ul>
         </div>
@@ -260,27 +313,34 @@
         © 2026 Miel &amp; Morir Soñando · Hecho con HTML, CSS y memoria.<br>
         Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
       </p>
+      <p style="text-align:center; margin-top: 18px;">
+        <a class="pie__intro-link" href="?intro=1" id="repetir-intro">🔁 Repetir la intro</a>
+      </p>
     </footer>
 
   </div>
 
   <!-- EASTER EGG -->
-  <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
+  <button id="boton-secreto" class="boton-secreto" type="button"
+          aria-label="Buscar mensaje secreto">?</button>
 
   <!-- CHATBOT MIEL -->
-  <section id="asistente" class="asistente" aria-label="Asistente virtual">
+  <section id="asistente" class="asistente" aria-label="Asistente virtual Miel">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
       <p class="mensaje-bot">¡Hola! Soy Miel 🐝 ¿Buscas algún postre en especial?</p>
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." autocomplete="off" required>
+      <input id="chat-entrada" type="text"
+             placeholder="Escribe: bizcocho, precio, entrega..."
+             autocomplete="off" required>
       <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+  <button id="boton-chat" class="boton-chat" type="button"
+          aria-label="Abrir asistente virtual" aria-expanded="false">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
     </svg>
