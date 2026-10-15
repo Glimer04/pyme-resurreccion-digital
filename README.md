@@ -26,6 +26,9 @@ Este repositorio es la respuesta a ese mensaje.
 - ✅ Agregar funciones innovadoras y resistentes (protocolo anti-borrado, respaldo en GitHub)
 - ✅ Diseñar una identidad visual única
 - ✅ Crear un mensaje impactante de resurrección
+- ✅ Optimizar imágenes con TinyPNG para mejor rendimiento
+- ✅ Añadir meta tags SEO (Open Graph y Twitter Card)
+- ✅ Mejorar accesibilidad con `aria-label` y roles
 
 ---
 
@@ -41,13 +44,19 @@ Este repositorio es la respuesta a ese mensaje.
 - `script.js`: filtros, cálculo de precios en RD$ y conexión directa al formulario de pedidos.
 
 **Fase 3 — Canal de pedidos**
-- `contacto.html`: pruebas del incidente, formulario con fecha de entrega, código de descuento y mapa.
+- `contacto.html`: pruebas del incidente, formulario con fecha de entrega, multi-producto, código de descuento y mapa.
 - `script.js`: validaciones, mensaje prellenado de WhatsApp y mapa Leaflet.
 
 **Fase 4 — Documentación y despliegue**
 - `README.md`: bitácora del rescate digital.
 - GitHub Pages: sitio publicado.
 - Colaborador: `edianfranklin` invitado al repositorio.
+
+**Fase 5 — Optimización y accesibilidad**
+- Optimización de imágenes con TinyPNG.
+- Meta tags SEO (Open Graph y Twitter Card) en las 3 páginas.
+- Mejoras de accesibilidad con `aria-label`, `aria-pressed` y `role`.
+- Fondos temáticos: colmena dorada (Catálogo) y código binario (Pedidos).
 
 ---
 
@@ -56,9 +65,10 @@ Este repositorio es la respuesta a ese mensaje.
 | Tecnología | Uso |
 |---|---|
 | HTML5 | Estructura semántica de las 3 páginas |
-| CSS3 | Identidad visual, animaciones glitch, diseño responsive, modo claro/oscuro |
+| CSS3 | Identidad visual, animaciones glitch, diseño responsive, modo claro/oscuro, patrones SVG |
 | JavaScript (vanilla) | Interacciones, filtros, cotizador, validaciones, chatbot |
 | Leaflet + OpenStreetMap | Mapa interactivo con la ubicación del taller |
+| TinyPNG | Optimización de imágenes |
 | GitHub Pages | Hosting del sitio publicado |
 
 ---
@@ -67,13 +77,13 @@ Este repositorio es la respuesta a ese mensaje.
 
 | Función | Dónde | Cómo probarla |
 |---|---|---|
-| Pantalla de error → recuperación | Inicio | Clic en "RECUPERAR SISTEMA" (o "Saltar intro"). Para verla otra vez: enlace "🔁 Repetir la intro" en el pie, o `index.html?intro=1` |
+| Pantalla de error → recuperación | Inicio | Clic en "RECUPERAR SISTEMA" o "🔁 Repetir la intro" en el footer |
 | Modo claro / oscuro | Todas | Botón 🌙 en el header (se recuerda entre páginas) |
 | Easter egg (receta secreta + código) | Todas | Botón **?** abajo a la izquierda, o escribe `miel` en el teclado |
 | Chatbot "Miel" | Todas | Botón 💬 abajo a la derecha |
 | Filtros del catálogo | Catálogo | Botones Bizcochos / Brownies / Fríos / Cajitas |
 | Cotizador en línea | Catálogo | Producto + tamaño + extras, y botón directo al pedido |
-| Formulario de pedidos | Pedidos | Fecha ≥ 48 h, de lunes a sábado; el pedido se prellena para WhatsApp |
+| Formulario de pedidos | Pedidos | Fecha ≥ 48 h, de lunes a sábado, **varios productos**, envío a WhatsApp |
 | Código de descuento | Pedidos | Se encuentra con el easter egg; válido una sola vez por navegador |
 | Mapa interactivo | Pedidos | Marcador con la ubicación del taller |
 
@@ -97,12 +107,13 @@ Este repositorio es la respuesta a ese mensaje.
 - **Tipografía:** Georgia (serif, cálida) + Courier New (mono, técnica)
 - **Elemento narrativo:** fénix de miel dorada emergiendo de un bizcocho, con dígitos binarios y código glitch
 - **Símbolo:** 🐝 abeja + bizcocho con cereza
+- **Fondos temáticos:** colmena (Catálogo) y binario (Pedidos)
 
 ---
 
 ## ♿ Accesibilidad
 
-Navegación por teclado con foco visible, `aria-label` en controles, `aria-live` en mensajes dinámicos, contraste revisado en modo claro y respeto a `prefers-reduced-motion`.
+Navegación por teclado con foco visible, `aria-label` en controles, `aria-live` en mensajes dinámicos, `aria-pressed` en botones de estado, contraste revisado en modo claro y respeto a `prefers-reduced-motion`.
 
 ---
 
@@ -133,10 +144,9 @@ pyme-resurreccion-digital/
 ├── img/
 │   ├── logo-miel.png
 │   ├── hero-miel.jpg
-│   └── productos/      # 8 fotos de productos (.jpg)
+│   └── productos/      # 8 fotos de productos (.jpg optimizadas)
 ├── LICENSE
 └── README.md
-
 
 ---
 
