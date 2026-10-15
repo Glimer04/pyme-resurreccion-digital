@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Catálogo reinventado de Miel & Morir Soñando: bizcochos, brownies, postres fríos y cajitas de regalo. Pide en línea.">
-  <title>Catálogo Reinventado | Miel & Morir Soñando</title>
+  <meta name="description" content="Catálogo reinventado de Miel &amp; Morir Soñando: bizcochos, brownies, postres fríos y cajitas de regalo. Cotiza en línea.">
+  <title>Catálogo Reinventado | Miel &amp; Morir Soñando</title>
   <link rel="icon" href="img/logo-miel.png" type="image/png">
   <link rel="stylesheet" href="estilos.css">
   <script src="script.js" defer></script>
@@ -15,8 +15,8 @@
 
     <header class="cabecera">
       <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel & Morir Soñando" class="logo__img">
-        <span class="logo__texto">MIEL <span class="amp">&</span> MORIR SOÑANDO</span>
+        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+        <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
       <nav aria-label="Navegación principal">
@@ -25,7 +25,7 @@
         <a href="contacto.html">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" aria-label="Cambiar tema">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
@@ -67,7 +67,10 @@
         <div class="catalogo" id="catalogo">
 
           <article class="producto" data-categoria="bizcocho" data-precio="1200">
-            <div class="producto__imagen" aria-hidden="true">🍰</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-bizcocho-miel.jpg"
+                   alt="Bizcocho de miel con merengue y cereza" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">BIZCOCHO</span>
             <h3>Bizcocho de Miel</h3>
             <p>Bizcocho esponjoso bañado en miel pura dominicana, con merengue y cereza.</p>
@@ -78,7 +81,10 @@
           </article>
 
           <article class="producto" data-categoria="bizcocho" data-precio="1500">
-            <div class="producto__imagen" aria-hidden="true">🎂</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-bizcocho-personalizado.jpg"
+                   alt="Bizcocho personalizado decorado para celebraciones" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">BIZCOCHO</span>
             <h3>Bizcocho Personalizado</h3>
             <p>Elige sabor, relleno y decoración. Ideal para cumpleaños y bodas.</p>
@@ -89,7 +95,10 @@
           </article>
 
           <article class="producto" data-categoria="brownie" data-precio="350">
-            <div class="producto__imagen" aria-hidden="true">🍫</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-brownie-fudge.jpg"
+                   alt="Brownie fudge con nueces y sal marina" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">BROWNIE</span>
             <h3>Brownie Fudge</h3>
             <p>Brownie denso de chocolate 70%, con nueces y sal marina.</p>
@@ -100,7 +109,10 @@
           </article>
 
           <article class="producto" data-categoria="brownie" data-precio="450">
-            <div class="producto__imagen" aria-hidden="true">🍪</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-blondie-coco.jpg"
+                   alt="Blondie de coco con caramelo" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">BROWNIE</span>
             <h3>Blondie de Coco</h3>
             <p>Versión clara del brownie, con coco rallado y caramelo.</p>
@@ -111,8 +123,11 @@
           </article>
 
           <article class="producto" data-categoria="frio" data-precio="500">
-            <div class="producto__imagen" aria-hidden="true">🍮</div>
-            <span class="producto__tag mono">FRIO</span>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-flan-coco.jpg"
+                   alt="Flan de coco con caramelo" width="800" height="600" loading="lazy">
+            </div>
+            <span class="producto__tag mono">FRÍO</span>
             <h3>Flan de Coco</h3>
             <p>Flan cremoso dominicano con coco fresco y caramelo.</p>
             <p class="producto__precio">Desde RD$500</p>
@@ -122,8 +137,11 @@
           </article>
 
           <article class="producto" data-categoria="frio" data-precio="550">
-            <div class="producto__imagen" aria-hidden="true">🥭</div>
-            <span class="producto__tag mono">FRIO</span>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-cheesecake-mango.jpg"
+                   alt="Cheesecake de mango con base de galleta" width="800" height="600" loading="lazy">
+            </div>
+            <span class="producto__tag mono">FRÍO</span>
             <h3>Cheesecake de Mango</h3>
             <p>Cheesecake frío con mango dominicano y base de galleta.</p>
             <p class="producto__precio">Desde RD$550</p>
@@ -133,7 +151,10 @@
           </article>
 
           <article class="producto" data-categoria="caja" data-precio="800">
-            <div class="producto__imagen" aria-hidden="true">🎁</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-caja-petit.jpg"
+                   alt="Cajita de 6 mini postres surtidos" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">CAJA</span>
             <h3>Cajita Regalo Petit</h3>
             <p>6 mini postres surtidos: brownies, galletas y bombones.</p>
@@ -144,7 +165,10 @@
           </article>
 
           <article class="producto" data-categoria="caja" data-precio="1600">
-            <div class="producto__imagen" aria-hidden="true">💝</div>
+            <div class="producto__imagen">
+              <img src="img/productos/producto-caja-premium.jpg"
+                   alt="Cajita premium de 12 mini postres con lazo dorado" width="800" height="600" loading="lazy">
+            </div>
             <span class="producto__tag mono">CAJA</span>
             <h3>Cajita Regalo Premium</h3>
             <p>12 mini postres + tarjeta personalizada + lazo dorado.</p>
@@ -158,12 +182,13 @@
       </section>
 
       <!-- COTIZADOR -->
-      <section class="seccion seccion--banner">
+      <section id="cotizador-seccion" class="seccion seccion--banner">
         <div class="banner">
           <p class="etiqueta mono">// COTIZADOR EN LÍNEA</p>
           <h2>Arma tu <span class="resaltado">pedido</span> en 30 segundos</h2>
           <p class="seccion__intro" style="margin-left:auto;margin-right:auto;">
-            Elige un producto, tamaño y extras. Te damos un precio estimado al instante.
+            Elige un producto, tamaño y extras. Te damos un precio estimado al instante,
+            con su equivalente en dólares según la tasa del día.
           </p>
 
           <form id="cotizador" class="cotizador">
@@ -199,10 +224,11 @@
           </form>
 
           <div id="resultado-cotizador" class="resultado-cotizador" aria-live="polite"></div>
-          <a id="boton-ir-pedido" class="boton boton--primario boton-ir-pedido" 
-   href="contacto.html" style="display: none;">
-  🛒 IR A HACER MI PEDIDO
-</a>
+
+          <a id="boton-ir-pedido" class="boton boton--primario boton-ir-pedido"
+             href="contacto.html" style="display: none;">
+            🛒 IR A HACER MI PEDIDO
+          </a>
         </div>
       </section>
 
@@ -211,7 +237,7 @@
     <footer class="pie">
       <div class="pie__grid">
         <div>
-          <p class="pie__marca">MIEL <span class="amp">&</span> MORIR SOÑANDO</p>
+          <p class="pie__marca">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</p>
           <p class="pie__texto">Repostería artesanal dominicana. Resucitada digitalmente el 26 de marzo.</p>
         </div>
         <div>
@@ -231,13 +257,18 @@
           </ul>
         </div>
       </div>
-      <p class="pie__copy mono">© 2026 Miel & Morir Soñando · Hecho con HTML, CSS y memoria.</p>
+      <p class="pie__copy mono">
+        © 2026 Miel &amp; Morir Soñando · Hecho con HTML, CSS y memoria.<br>
+        Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
+      </p>
     </footer>
 
   </div>
 
+  <!-- EASTER EGG -->
   <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
 
+  <!-- CHATBOT MIEL -->
   <section id="asistente" class="asistente" aria-label="Asistente virtual">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
@@ -245,12 +276,16 @@
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." required>
-      <button type="submit">➤</button>
+      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." autocomplete="off" required>
+      <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente">💬</button>
+  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+    </svg>
+  </button>
 
 </body>
 </html>
