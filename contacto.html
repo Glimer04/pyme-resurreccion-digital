@@ -8,7 +8,6 @@
   <link rel="icon" href="img/logo-miel.png" type="image/png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="estilos.css">
-  <!-- Leaflet debe cargarse ANTES que script.js (ambos con defer mantienen el orden) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="script.js" defer></script>
 </head>
@@ -103,6 +102,7 @@
           <h2>Haz tu pedido de <span class="resaltado">resurrección</span></h2>
           <p class="seccion__intro" style="margin-left:auto;margin-right:auto;">
             Cuéntanos qué postre quieres, para cuándo y dónde lo entregamos.
+            Puedes agregar varios productos al mismo pedido.
             Te confirmamos por WhatsApp en menos de 1 hora.
           </p>
 
@@ -120,18 +120,25 @@
                    placeholder="8095550123" maxlength="10" inputmode="numeric"
                    title="Solo números, 10 dígitos (sin guiones)">
 
-            <label for="producto-contacto">Producto</label>
+            <label for="producto-contacto">Producto principal</label>
             <select id="producto-contacto" name="producto" required>
               <option value="">— Elige un producto —</option>
-              <option value="Bizcocho de Miel">Bizcocho de Miel</option>
-              <option value="Bizcocho Personalizado">Bizcocho Personalizado</option>
-              <option value="Brownie Fudge">Brownie Fudge</option>
-              <option value="Blondie de Coco">Blondie de Coco</option>
-              <option value="Flan de Coco">Flan de Coco</option>
-              <option value="Cheesecake de Mango">Cheesecake de Mango</option>
-              <option value="Cajita Regalo Petit">Cajita Regalo Petit</option>
-              <option value="Cajita Regalo Premium">Cajita Regalo Premium</option>
+              <option value="Bizcocho de Miel">Bizcocho de Miel — RD$1,200</option>
+              <option value="Bizcocho Personalizado">Bizcocho Personalizado — RD$1,500</option>
+              <option value="Brownie Fudge">Brownie Fudge — RD$350</option>
+              <option value="Blondie de Coco">Blondie de Coco — RD$450</option>
+              <option value="Flan de Coco">Flan de Coco — RD$500</option>
+              <option value="Cheesecake de Mango">Cheesecake de Mango — RD$550</option>
+              <option value="Cajita Regalo Petit">Cajita Regalo Petit — RD$800</option>
+              <option value="Cajita Regalo Premium">Cajita Regalo Premium — RD$1,600</option>
             </select>
+
+            <!-- Contenedor para productos adicionales -->
+            <div id="productos-adicionales" class="productos-adicionales"></div>
+
+            <button type="button" id="agregar-producto" class="boton-agregar">
+              ➕ Agregar otro producto al pedido
+            </button>
 
             <label for="fecha-entrega">Fecha de entrega (mínimo 48 horas después, de lunes a sábado)</label>
             <input id="fecha-entrega" name="fecha" type="date" required>
@@ -188,8 +195,20 @@
         <div>
           <h4>Contacto</h4>
           <ul>
-            <li><a href="mailto:hola@mielmorirsonando.do">hola@mielmorirsonando.do</a></li>
-            <li><a href="tel:+18095550123">+1 (809) 555-0123</a></li>
+            <li>
+              <a href="https://wa.me/18095550123?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20Miel%20%26%20Morir%20So%C3%B1ando"
+                 target="_blank" rel="noopener">
+                📱 WhatsApp: +1 (809) 555-0123
+              </a>
+            </li>
+            <li>
+              <a href="mailto:hola@mielmorirsonando.do?subject=Pedido%20Miel%20%26%20Morir%20So%C3%B1ando">
+                ✉️ hola@mielmorirsonando.do
+              </a>
+            </li>
+            <li>
+              <a href="tel:+18095550123">☎️ +1 (809) 555-0123</a>
+            </li>
             <li>Santo Domingo, República Dominicana</li>
           </ul>
         </div>
@@ -197,6 +216,9 @@
       <p class="pie__copy mono">
         © 2026 Miel &amp; Morir Soñando · Hecho con HTML, CSS y memoria.<br>
         Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
+      </p>
+      <p style="text-align:center; margin-top: 18px;">
+        <a class="pie__intro-link" href="?intro=1" id="repetir-intro">🔁 Repetir la intro</a>
       </p>
     </footer>
 
