@@ -112,3 +112,5 @@ pyme-resurreccion-digital/
 ---
 
 > ⚠️ Proyecto académico: la historia, el negocio, los testimonios, las direcciones y los teléfonos son ficticios.
+
+
