@@ -2,12 +2,26 @@
    MIEL & MORIR SOÑANDO — script.js (versión final)
    Un solo archivo para las 3 páginas. Cada módulo se activa solo
    si encuentra sus elementos en la página donde se carga.
+
+   ÍNDICE
+   ---------------------------------------------------------------
+    0. Configuración (CONFIG) y catálogo de precios (CATALOGO)
+    1. Utilidades ($, almacén seguro, nodos, formato, fechas)
+    2. Modo claro / oscuro (se recuerda entre páginas)
+    3. Pantalla de error / intro (terminal + recarga forzada)
+    4. Easter egg (receta secreta y código de descuento)
+    5. Chatbot "Miel" (respuestas por palabras clave)
+    6. Filtros del catálogo (todos / bizcocho / brownie / frío / caja)
+    7. Cotizador en línea (precio en RD$ + guardado para pedido)
+    8. Formulario de pedidos (validación, código, WhatsApp)
+    9. Mapa interactivo (Leaflet + OpenStreetMap)
+   10. Arranque (llama a todos los módulos)
    ============================================================== */
 (function () {
   'use strict';
 
   /* ============================================================
-     CONFIGURACIÓN 
+     0. CONFIGURACIÓN 
      ============================================================ */
   const CONFIG = {
     // Número de WhatsApp: código de país + número, sin + ni espacios.
@@ -32,7 +46,7 @@
   };
 
   /* ============================================================
-     UTILIDADES
+     1. UTILIDADES
      ============================================================ */
   function $(id) { return document.getElementById(id); }
 
@@ -82,7 +96,7 @@
   }
 
   /* ============================================================
-     1. MODO CLARO / OSCURO (se recuerda entre páginas)
+     2. MODO CLARO / OSCURO (se recuerda entre páginas)
      El sitio nace oscuro porque es parte de su identidad visual.
      ============================================================ */
   function iniciarTema() {
@@ -111,7 +125,7 @@
   }
 
   /* ============================================================
-     2. PANTALLA DE ERROR → "RECUPERAR SISTEMA"
+     3. PANTALLA DE ERROR → "RECUPERAR SISTEMA"
      - Se muestra una vez por sesión (o siempre con ?intro=1)
      - Se puede saltar con el botón o con la tecla Esc
      - Respeta "reducir movimiento" del sistema
@@ -266,10 +280,22 @@
     } else {
       programar(secuencia, 300);
     }
+   
+     // Enlace "Repetir la intro" del footer: fuerza recarga limpia
+    const enlaceRepetir = document.getElementById('repetir-intro');
+    if (enlaceRepetir) {
+      enlaceRepetir.addEventListener('click', function (e) {
+        e.preventDefault();
+        // Borra la marca de "intro vista" y fuerza recarga sin caché
+        almacen.borrar('sessionStorage', 'intro_vista');
+        window.location.href = 'index.html?intro=1&t=' + Date.now();
+      });
+    }
+     
   }
 
   /* ============================================================
-     3. EASTER EGG — RECETA SECRETA
+     4. EASTER EGG — RECETA SECRETA
      Se abre con el botón "?" o escribiendo la palabra "miel"
      en cualquier parte de la página (fuera de un campo de texto).
      ============================================================ */
@@ -331,7 +357,7 @@
   }
 
   /* ============================================================
-     4. CHATBOT "MIEL"
+     5. CHATBOT "MIEL"
      Responde por palabras clave (no es IA). Ignora acentos.
      El orden de las reglas importa: gana la primera que coincida.
      ============================================================ */
@@ -485,7 +511,7 @@
   }
 
   /* ============================================================
-     5. FILTROS DEL CATÁLOGO
+     6. FILTROS DEL CATÁLOGO
      ============================================================ */
   function iniciarFiltros() {
     const botones = document.querySelectorAll('.filtro');
@@ -513,7 +539,7 @@
   }
 
   /* ============================================================
-     6. COTIZADOR EN LÍNEA
+     7. COTIZADOR EN LÍNEA
      ============================================================ */
 
   function linea(etiqueta, valor, resaltar) {
@@ -591,7 +617,7 @@
     });
 
   /* ============================================================
-     7. FORMULARIO DE PEDIDOS (validación, descuento, WhatsApp)
+     8. FORMULARIO DE PEDIDOS (validación, descuento, WhatsApp)
      ============================================================ */
   function iniciarPedido() {
     const formulario = $('formulario-contacto');
@@ -781,7 +807,7 @@
 
 
   /* ============================================================
-     8. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
+     9. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
      ============================================================ */
   function iniciarMapa() {
     const contenedor = $('mapa');
@@ -817,7 +843,7 @@
   }
 
   /* ============================================================
-     ARRANQUE
+     10. ARRANQUE
      ============================================================ */
   iniciarTema();
   iniciarIntro();
