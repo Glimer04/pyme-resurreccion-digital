@@ -1597,3 +1597,32 @@ body.modo-claro .secreto::backdrop { background: rgba(42, 31, 20, 0.55); }
 
   .ruido, .scanlines { display: none; }
 }
+
+/* ============ ENLACE "REPETIR INTRO" (solo para presentación) ============ */
+.pie__intro-link {
+  display: inline-block;
+  padding: 8px 18px;
+  background: rgba(0, 255, 198, 0.08);
+  border: 1px dashed var(--menta);
+  border-radius: 6px;
+  color: var(--menta);
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  opacity: 0.65;
+  transition: opacity 0.25s, background 0.25s, border-style 0.25s;
+}
+
+.pie__intro-link:hover,
+.pie__intro-link:focus-visible {
+  opacity: 1;
+  background: rgba(0, 255, 198, 0.15);
+  border-style: solid;
+}
+
+body.modo-claro .pie__intro-link {
+  background: rgba(0, 122, 94, 0.08);
+  border-color: var(--menta);
+  color: var(--menta);
+}
