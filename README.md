@@ -123,19 +123,19 @@ El cliente ve la versión simplificada de este protocolo en la sección **"Compr
 
 ## 📁 Estructura del repositorio
 
+```text
 pyme-resurreccion-digital/
-├── index.html # Inicio: intro, historia, compromiso, favoritos, testimonios
-├── servicios.html # Catálogo + cotizador
-├── contacto.html # Pruebas del incidente + pedidos + mapa
-├── estilos.css # Estilos de las 3 páginas
-├── script.js # Lógica de las 3 páginas
+├── index.html          # Inicio: intro, historia, compromiso, favoritos, testimonios
+├── servicios.html      # Catálogo + cotizador
+├── contacto.html       # Pruebas del incidente + pedidos + mapa
+├── estilos.css         # Estilos de las 3 páginas
+├── script.js           # Lógica de las 3 páginas
 ├── img/
-│ ├── logo-miel.png
-│ ├── hero-miel.jpg
-│ └── productos/ # 8 fotos de productos (.jpg)
+│   ├── logo-miel.png
+│   ├── hero-miel.jpg
+│   └── productos/      # 8 fotos de productos (.jpg)
 ├── LICENSE
 └── README.md
-
 
 
 ---
