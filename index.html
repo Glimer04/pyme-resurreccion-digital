@@ -3,11 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Miel &amp; Morir Soñando: repostería dominicana resucitada digitalmente. Bizcochos, brownies y postres fríos con entrega a domicilio.">
-  <title>Miel &amp; Morir Soñando | Resucitamos</title>
+
+  <!-- SEO básico -->
+  <title>Miel &amp; Morir Soñando | Repostería Dominicana Resucitada</title>
+  <meta name="description" content="Miel &amp; Morir Soñando: repostería artesanal dominicana resucitada digitalmente. Bizcochos, brownies y postres fríos con entrega a domicilio en Santo Domingo.">
+  <meta name="author" content="Glimer04">
+  <meta name="keywords" content="repostería dominicana, bizcocho, brownies, postres fríos, Santo Domingo, Miel y Morir Soñando">
+  <meta name="theme-color" content="#0D0B1F">
+  <link rel="canonical" href="https://glimer04.github.io/pyme-resurreccion-digital/">
+
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://glimer04.github.io/pyme-resurreccion-digital/">
+  <meta property="og:title" content="Miel &amp; Morir Soñando | Repostería Dominicana">
+  <meta property="og:description" content="Nos borraron de Internet y volvimos más dulces. Pide bizcochos, brownies y postres fríos con entrega a domicilio.">
+  <meta property="og:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+  <meta property="og:image:alt" content="Fénix dorado emergiendo de un bizcocho de miel">
+  <meta property="og:locale" content="es_DO">
+  <meta property="og:site_name" content="Miel &amp; Morir Soñando">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Miel &amp; Morir Soñando | Repostería Dominicana">
+  <meta name="twitter:description" content="Nos borraron de Internet y volvimos más dulces. Pide bizcochos, brownies y postres fríos con entrega a domicilio.">
+  <meta name="twitter:image" content="https://glimer04.github.io/pyme-resurreccion-digital/img/hero-miel.jpg">
+
+  <!-- Favicon -->
   <link rel="icon" href="img/logo-miel.png" type="image/png">
 
-  <!-- Si el visitante ya vio la intro en esta sesión, evita el parpadeo de la pantalla de error -->
+  <!-- Si el visitante ya vio la intro en esta sesión, evita el parpadeo -->
   <script>
     try {
       if (sessionStorage.getItem('intro_vista') === '1' && !/[?&]intro=1/.test(location.search)) {
@@ -15,8 +39,14 @@
       }
     } catch (e) { /* sin sessionStorage: se mostrará la intro normal */ }
   </script>
+
   <!-- Sin JavaScript no hay intro: se muestra el sitio directamente -->
-  <noscript><style>#pantalla-error { display: none !important; } #sitio.oculto { display: block !important; }</style></noscript>
+  <noscript>
+    <style>
+      #pantalla-error { display: none !important; }
+      #sitio.oculto { display: block !important; }
+    </style>
+  </noscript>
 
   <link rel="stylesheet" href="estilos.css">
   <script src="script.js" defer></script>
@@ -24,11 +54,11 @@
 <body>
 
   <!-- PANTALLA DE ERROR INICIAL -->
-  <div id="pantalla-error" class="pantalla-error">
+  <div id="pantalla-error" class="pantalla-error" role="region" aria-label="Pantalla de recuperación del sistema">
     <div class="scanlines" aria-hidden="true"></div>
     <div class="ruido" aria-hidden="true"></div>
 
-    <div class="terminal-hackeo">
+    <div class="terminal-hackeo" aria-hidden="true">
       <div class="terminal-hackeo__barra">
         <span></span><span></span><span></span>
         <span class="terminal-hackeo__titulo mono">root@miel-morir-sonando:~$</span>
@@ -51,7 +81,7 @@
       <h2 class="glitch-sub" data-text="YA NO EXISTE.">YA NO EXISTE.</h2>
       <p class="error-texto">... o eso es lo que alguien quiere que creas.</p>
 
-      <button id="boton-recuperar" class="boton-recuperar" type="button">
+      <button id="boton-recuperar" class="boton-recuperar" type="button" aria-label="Recuperar el sistema y entrar al sitio">
         ⟳ RECUPERAR SISTEMA
       </button>
       <p class="pista mono">Haz clic para iniciar la recuperación</p>
@@ -64,8 +94,8 @@
   <div id="sitio" class="oculto">
 
     <header class="cabecera">
-      <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+      <a href="index.html" class="logo" aria-label="Miel &amp; Morir Soñando — Inicio">
+        <img src="img/logo-miel.png" alt="Logo de Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
         <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
@@ -75,7 +105,8 @@
         <a href="contacto.html">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button"
+              aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
@@ -285,8 +316,20 @@
         <div>
           <h4>Contacto</h4>
           <ul>
-            <li><a href="mailto:hola@mielmorirsonando.do">hola@mielmorirsonando.do</a></li>
-            <li><a href="tel:+18095550123">+1 (809) 555-0123</a></li>
+            <li>
+              <a href="https://wa.me/18095550123?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20Miel%20%26%20Morir%20So%C3%B1ando"
+                 target="_blank" rel="noopener">
+                📱 WhatsApp: +1 (809) 555-0123
+              </a>
+            </li>
+            <li>
+              <a href="mailto:hola@mielmorirsonando.do?subject=Pedido%20Miel%20%26%20Morir%20So%C3%B1ando">
+                ✉️ hola@mielmorirsonando.do
+              </a>
+            </li>
+            <li>
+              <a href="tel:+18095550123">☎️ +1 (809) 555-0123</a>
+            </li>
             <li>Santo Domingo, República Dominicana</li>
           </ul>
         </div>
@@ -296,29 +339,33 @@
         Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
       </p>
       <p style="text-align:center; margin-top: 18px;">
-      <a class="pie__intro-link" href="?intro=1" id="repetir-intro">🔁 Repetir la intro</a>
+        <a class="pie__intro-link" href="?intro=1" id="repetir-intro">🔁 Repetir la intro</a>
       </p>
     </footer>
 
   </div>
 
   <!-- EASTER EGG -->
-  <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
+  <button id="boton-secreto" class="boton-secreto" type="button"
+          aria-label="Buscar mensaje secreto">?</button>
 
   <!-- CHATBOT MIEL -->
-  <section id="asistente" class="asistente" aria-label="Asistente virtual">
+  <section id="asistente" class="asistente" aria-label="Asistente virtual Miel">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
       <p class="mensaje-bot">¡Hola! Soy Miel 🐝 ¿Qué postre se te antoja hoy?</p>
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." autocomplete="off" required>
+      <input id="chat-entrada" type="text"
+             placeholder="Escribe: bizcocho, precio, entrega..."
+             autocomplete="off" required>
       <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+  <button id="boton-chat" class="boton-chat" type="button"
+          aria-label="Abrir asistente virtual" aria-expanded="false">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
     </svg>
