@@ -281,7 +281,7 @@
       programar(secuencia, 300);
     }
    
-     // Enlace "Repetir la intro" del footer: fuerza recarga limpia
+    // Enlace "Repetir la intro" del footer: fuerza recarga limpia
     const enlaceRepetir = document.getElementById('repetir-intro');
     if (enlaceRepetir) {
       enlaceRepetir.addEventListener('click', function (e) {
@@ -291,7 +291,7 @@
         window.location.href = 'index.html?intro=1&t=' + Date.now();
       });
     }
-     
+    
   }
 
   /* ============================================================
