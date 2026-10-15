@@ -1507,3 +1507,101 @@ body.modo-claro .pie__intro-link {
   border-color: var(--menta);
   color: var(--menta);
 }
+
+/* ============ PRODUCTOS ADICIONALES EN EL PEDIDO ============ */
+.productos-adicionales {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.producto-adicional {
+  display: grid;
+  grid-template-columns: 1fr 80px 44px;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(242, 183, 5, 0.06);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  animation: aparecerProducto 0.35s ease;
+}
+
+@keyframes aparecerProducto {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.producto-adicional__select,
+.producto-adicional__cantidad {
+  padding: 10px;
+  color: var(--texto);
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+}
+
+.producto-adicional__select:focus,
+.producto-adicional__cantidad:focus {
+  outline: none;
+  border-color: var(--dorado);
+}
+
+.producto-adicional__quitar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 92, 92, 0.15);
+  color: #ff5c5c;
+  border: 1px solid rgba(255, 92, 92, 0.4);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.producto-adicional__quitar:hover {
+  background: rgba(255, 92, 92, 0.3);
+  transform: scale(1.05);
+}
+
+.boton-agregar {
+  display: inline-block;
+  align-self: flex-start;
+  margin-bottom: 10px;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--menta);
+  border: 1px dashed var(--menta);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  transition: background 0.25s, border-style 0.25s;
+}
+
+.boton-agregar:hover {
+  background: rgba(0, 255, 198, 0.1);
+  border-style: solid;
+}
+
+body.modo-claro .boton-agregar {
+  color: var(--menta);
+  border-color: var(--menta);
+}
+
+@media (max-width: 600px) {
+  .producto-adicional {
+    grid-template-columns: 1fr 60px 40px;
+    gap: 6px;
+    padding: 10px;
+  }
+  .producto-adicional__quitar { width: 40px; height: 40px; }
+  .boton-agregar { font-size: 0.78rem; padding: 9px 14px; }
+}
