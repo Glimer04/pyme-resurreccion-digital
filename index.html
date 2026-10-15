@@ -3,9 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Miel & Morir Soñando: repostería dominicana resucitada digitalmente. Bizcochos, brownies y postres fríos con entrega a domicilio.">
-  <title>Miel & Morir Soñando | Resucitamos</title>
+  <meta name="description" content="Miel &amp; Morir Soñando: repostería dominicana resucitada digitalmente. Bizcochos, brownies y postres fríos con entrega a domicilio.">
+  <title>Miel &amp; Morir Soñando | Resucitamos</title>
   <link rel="icon" href="img/logo-miel.png" type="image/png">
+
+  <!-- Si el visitante ya vio la intro en esta sesión, evita el parpadeo de la pantalla de error -->
+  <script>
+    try {
+      if (sessionStorage.getItem('intro_vista') === '1' && !/[?&]intro=1/.test(location.search)) {
+        document.documentElement.classList.add('intro-vista');
+      }
+    } catch (e) { /* sin sessionStorage: se mostrará la intro normal */ }
+  </script>
+  <!-- Sin JavaScript no hay intro: se muestra el sitio directamente -->
+  <noscript><style>#pantalla-error { display: none !important; } #sitio.oculto { display: block !important; }</style></noscript>
+
   <link rel="stylesheet" href="estilos.css">
   <script src="script.js" defer></script>
 </head>
@@ -44,6 +56,8 @@
       </button>
       <p class="pista mono">Haz clic para iniciar la recuperación</p>
     </div>
+
+    <!-- El botón "Saltar intro" lo agrega script.js -->
   </div>
 
   <!-- SITIO PRINCIPAL (oculto al inicio) -->
@@ -51,8 +65,8 @@
 
     <header class="cabecera">
       <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel & Morir Soñando" class="logo__img">
-        <span class="logo__texto">MIEL <span class="amp">&</span> MORIR SOÑANDO</span>
+        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+        <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
       <nav aria-label="Navegación principal">
@@ -61,7 +75,7 @@
         <a href="contacto.html">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" aria-label="Cambiar tema">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
@@ -77,7 +91,7 @@
           </h1>
           <p class="hero__intro">
             El <strong>12 de marzo</strong> nuestra web, redes y clientes desaparecieron de Internet.
-            Hoy <strong>Miel & Morir Soñando</strong> renace con bizcochos artesanales,
+            Hoy <strong>Miel &amp; Morir Soñando</strong> renace con bizcochos artesanales,
             brownies, postres fríos y un sistema de pedidos a prueba de borrados.
           </p>
           <div class="hero__botones">
@@ -90,7 +104,7 @@
       <!-- HISTORIA DEL MISTERIO -->
       <section id="historia" class="seccion">
         <p class="etiqueta mono">// ARCHIVO_001 · EXPEDIENTE DEL INCIDENTE</p>
-        <h2>¿Qué pasó con <span class="resaltado">Miel & Morir Soñando</span>?</h2>
+        <h2>¿Qué pasó con <span class="resaltado">Miel &amp; Morir Soñando</span>?</h2>
         <p class="seccion__intro">
           La noche del 12 de marzo, nuestra página web, nuestras redes sociales
           y hasta nuestro correo desaparecieron. Los clientes nos buscaban y no
@@ -111,12 +125,92 @@
           <article class="tarjeta">
             <span class="tarjeta__numero mono">DÍA 03</span>
             <h3>El USB misterioso</h3>
-            <p>Encontramos un USB en la oficina. Dentro, un solo archivo de texto: <em>"Tu negocio ha sido borrado. Reinvéntalo."</em></p>
+            <p>Encontramos un USB en la oficina. Dentro, un solo archivo de texto: <em>"Tu negocio ha sido borrado de la existencia digital. Si quieres recuperarlo, deberás reinventarlo."</em></p>
           </article>
         </div>
       </section>
 
-            <!-- PRODUCTOS DESTACADOS -->
+      <!-- ESCUDO ANTI-BORRADO -->
+      <section id="escudo" class="seccion">
+        <p class="etiqueta mono">// ARCHIVO_004 · PROTOCOLO ANTI-BORRADO</p>
+        <h2>Escudo <span class="resaltado">anti-borrado</span></h2>
+        <p class="seccion__intro">
+          Nos borraron una vez y no va a repetirse. Estas son las seis capas de protección
+          de la nueva Miel &amp; Morir Soñando. Marca las que ya están activas y mira cómo sube el nivel.
+          Tu avance se guarda en este navegador.
+        </p>
+
+        <div class="escudo">
+          <ul class="escudo__lista">
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="respaldo" checked>
+                <span class="escudo__texto">
+                  <strong>Respaldo en GitHub</strong>
+                  Cada versión del sitio queda guardada con su historial. Si algo se borra, se restaura.
+                </span>
+              </label>
+            </li>
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="espejo">
+                <span class="escudo__texto">
+                  <strong>Copia espejo en otro hosting</strong>
+                  Una segunda copia (Netlify o GitLab Pages) mantiene el sitio en línea si falla el principal.
+                </span>
+              </label>
+            </li>
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="dospasos">
+                <span class="escudo__texto">
+                  <strong>Verificación en dos pasos</strong>
+                  Redes sociales, correo y hosting piden un código extra para entrar.
+                </span>
+              </label>
+            </li>
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="dominio">
+                <span class="escudo__texto">
+                  <strong>Dominio y correo propios</strong>
+                  Con renovación automática y acceso a nombre de la dueña, no de un tercero.
+                </span>
+              </label>
+            </li>
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="canales">
+                <span class="escudo__texto">
+                  <strong>Canales alternos de contacto</strong>
+                  WhatsApp, correo y teléfono publicados: si uno cae, los clientes usan otro.
+                </span>
+              </label>
+            </li>
+            <li class="escudo__item">
+              <label>
+                <input type="checkbox" data-escudo="plan">
+                <span class="escudo__texto">
+                  <strong>Plan de recuperación por escrito</strong>
+                  Lista de pasos y contactos para volver a abrir en horas, no en semanas.
+                </span>
+              </label>
+            </li>
+          </ul>
+
+          <div id="escudo-panel" class="escudo__panel" data-nivel="riesgo">
+            <p class="escudo__titulo mono" id="escudo-titulo">NIVEL DE PROTECCIÓN</p>
+            <div id="escudo-medidor" class="escudo__barra" role="progressbar"
+                 aria-labelledby="escudo-titulo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span id="escudo-relleno" class="escudo__relleno"></span>
+            </div>
+            <p id="escudo-porcentaje" class="escudo__porcentaje mono">0%</p>
+            <p id="escudo-estado" class="escudo__estado" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTOS DESTACADOS -->
       <section class="seccion">
         <p class="etiqueta mono">// HORNEADOS HOY</p>
         <h2>Los <span class="resaltado">favoritos</span> de la casa</h2>
@@ -127,28 +221,32 @@
 
         <div class="favoritos">
           <article class="favorito">
-            <div class="favorito__emoji" aria-hidden="true">🍰</div>
+            <img class="favorito__img" src="img/productos/producto-bizcocho-miel.jpg"
+                 alt="Bizcocho de miel con merengue y cereza" width="800" height="600" loading="lazy">
             <h3>Bizcocho de Miel</h3>
             <p>Bañado en miel pura dominicana, con merengue y cereza.</p>
             <p class="favorito__precio mono">RD$ 1,200</p>
           </article>
 
           <article class="favorito">
-            <div class="favorito__emoji" aria-hidden="true">🍫</div>
+            <img class="favorito__img" src="img/productos/producto-brownie-fudge.jpg"
+                 alt="Brownie fudge con nueces y sal marina" width="800" height="600" loading="lazy">
             <h3>Brownie Fudge</h3>
             <p>Chocolate 70%, nueces y un toque de sal marina.</p>
             <p class="favorito__precio mono">RD$ 350</p>
           </article>
 
           <article class="favorito">
-            <div class="favorito__emoji" aria-hidden="true">🍮</div>
+            <img class="favorito__img" src="img/productos/producto-flan-coco.jpg"
+                 alt="Flan de coco con caramelo" width="800" height="600" loading="lazy">
             <h3>Flan de Coco</h3>
             <p>Cremoso, con coco fresco y caramelo artesanal.</p>
             <p class="favorito__precio mono">RD$ 500</p>
           </article>
 
           <article class="favorito">
-            <div class="favorito__emoji" aria-hidden="true">🎁</div>
+            <img class="favorito__img" src="img/productos/producto-caja-petit.jpg"
+                 alt="Cajita de 6 mini postres surtidos" width="800" height="600" loading="lazy">
             <h3>Cajita Regalo</h3>
             <p>6 mini postres surtidos, perfecta para regalar.</p>
             <p class="favorito__precio mono">RD$ 800</p>
@@ -196,7 +294,6 @@
         </div>
       </section>
 
-    
       <!-- MENSAJE DE RESURRECCIÓN -->
       <section class="seccion seccion--banner">
         <div class="banner">
@@ -215,7 +312,7 @@
     <footer class="pie">
       <div class="pie__grid">
         <div>
-          <p class="pie__marca">MIEL <span class="amp">&</span> MORIR SOÑANDO</p>
+          <p class="pie__marca">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</p>
           <p class="pie__texto">Repostería artesanal dominicana. Resucitada digitalmente el 26 de marzo.</p>
         </div>
         <div>
@@ -235,7 +332,10 @@
           </ul>
         </div>
       </div>
-      <p class="pie__copy mono">© 2026 Miel & Morir Soñando · Hecho con HTML, CSS y memoria.</p>
+      <p class="pie__copy mono">
+        © 2026 Miel &amp; Morir Soñando · Hecho con HTML, CSS y memoria.<br>
+        Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
+      </p>
     </footer>
 
   </div>
@@ -243,7 +343,7 @@
   <!-- EASTER EGG -->
   <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
 
-  <!-- CHATBOT NOVA -->
+  <!-- CHATBOT MIEL -->
   <section id="asistente" class="asistente" aria-label="Asistente virtual">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
@@ -251,12 +351,16 @@
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." required>
-      <button type="submit">➤</button>
+      <input id="chat-entrada" type="text" placeholder="Escribe: bizcocho, precio, entrega..." autocomplete="off" required>
+      <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente">💬</button>
+  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+    </svg>
+  </button>
 
 </body>
 </html>
