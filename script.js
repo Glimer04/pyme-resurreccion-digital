@@ -1,512 +1,920 @@
-/* ==============================
-   MIEL & MORIR SOÑANDO — script
-   ============================== */
+/* ==============================================================
+   MIEL & MORIR SOÑANDO — script.js (versión final)
+   Un solo archivo para las 3 páginas. Cada módulo se activa solo
+   si encuentra sus elementos en la página donde se carga.
+   ============================================================== */
+(function () {
+  'use strict';
 
-/* ============================================================
-   1. EFECTO TERMINAL — PANTALLA DE ERROR HACKEADA
-   ============================================================ */
+  /* ============================================================
+     CONFIGURACIÓN 
+     ============================================================ */
+  const CONFIG = {
+    // Número de WhatsApp: código de país + número, sin + ni espacios.
+    // Es un número de ejemplo: cámbialo por uno real si quieres probarlo.
+    whatsapp: '18095550123',
+    codigo: 'RESURGIR20',
+    descuento: 0.2,
+    taller: [18.4861, -69.9312]
+  };
 
-// Textos que se van a "escribir" automáticamente
-const lineasTerminal = [
-  { id: 'linea-1', texto: 'Iniciando protocolo de búsqueda...' },
-  { id: 'linea-2', texto: 'Buscando negocio: Miel & Morir Soñando' },
-  { id: 'linea-3', texto: '✗ ERROR 0x404 — NEGOCIO NO ENCONTRADO' }
-];
+  // Fuente única de precios para el chatbot y el pedido.
+  // Debe coincidir con los precios de servicios.html.
+  const CATALOGO = {
+    'Bizcocho de Miel': 1200,
+    'Bizcocho Personalizado': 1500,
+    'Brownie Fudge': 350,
+    'Blondie de Coco': 450,
+    'Flan de Coco': 500,
+    'Cheesecake de Mango': 550,
+    'Cajita Regalo Petit': 800,
+    'Cajita Regalo Premium': 1600
+  };
 
-// Escribe una línea letra por letra
-function escribirLinea(elementoId, texto, callback) {
-  const elemento = document.getElementById(elementoId);
-  if (!elemento) { if (callback) callback(); return; }
+  /* ============================================================
+     UTILIDADES
+     ============================================================ */
+  function $(id) { return document.getElementById(id); }
 
-  let i = 0;
-  elemento.textContent = '';
-
-  const intervalo = setInterval(function () {
-    elemento.textContent += texto.charAt(i);
-    i++;
-    if (i >= texto.length) {
-      clearInterval(intervalo);
-      if (callback) callback();
+  // Acceso seguro a localStorage / sessionStorage (pueden fallar en modo privado)
+  const almacen = {
+    leer: function (tipo, clave) {
+      try { return window[tipo].getItem(clave); } catch (e) { return null; }
+    },
+    guardar: function (tipo, clave, valor) {
+      try { window[tipo].setItem(clave, valor); } catch (e) { /* sin almacenamiento */ }
+    },
+    borrar: function (tipo, clave) {
+      try { window[tipo].removeItem(clave); } catch (e) { /* sin almacenamiento */ }
     }
-  }, 35);
-}
+  };
 
-// Secuencia completa de la terminal
-function iniciarSecuenciaTerminal() {
-  escribirLinea(lineasTerminal[0].id, lineasTerminal[0].texto, function () {
-    setTimeout(function () {
-      escribirLinea(lineasTerminal[1].id, lineasTerminal[1].texto, function () {
-        setTimeout(function () {
-          escribirLinea(lineasTerminal[2].id, lineasTerminal[2].texto, function () {
-            setTimeout(animarBarraProgreso, 500);
-          });
-        }, 400);
+  // Crea un elemento con texto seguro (textContent, nunca innerHTML)
+  function nodo(etiqueta, texto, atributos) {
+    const n = document.createElement(etiqueta);
+    if (texto) n.textContent = texto;
+    if (atributos) {
+      Object.keys(atributos).forEach(function (k) { n.setAttribute(k, atributos[k]); });
+    }
+    return n;
+  }
+
+  function formatoRD(numero) {
+    return 'RD$' + Math.round(numero).toLocaleString('en-US');
+  }
+
+  // Minúsculas y sin acentos, para que "envío" y "envio" sean lo mismo
+  function normalizar(texto) {
+    return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
+
+  function aISO(fecha) {
+    return fecha.getFullYear() + '-' +
+      String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+      String(fecha.getDate()).padStart(2, '0');
+  }
+
+  function formatearFecha(iso) {
+    const partes = iso.split('-');
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    return parseInt(partes[2], 10) + ' de ' + meses[parseInt(partes[1], 10) - 1] + ' de ' + partes[0];
+  }
+
+  /* ============================================================
+     1. MODO CLARO / OSCURO (se recuerda entre páginas)
+     El sitio nace oscuro porque es parte de su identidad visual.
+     ============================================================ */
+  function iniciarTema() {
+    if (almacen.leer('localStorage', 'tema') === 'claro') {
+      document.body.classList.add('modo-claro');
+    }
+
+    const boton = $('boton-tema');
+    if (!boton) return;
+
+    function pintar() {
+      const claro = document.body.classList.contains('modo-claro');
+      boton.textContent = claro ? '☀️' : '🌙';
+      boton.setAttribute('aria-pressed', String(claro));
+      boton.setAttribute('aria-label', claro ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro');
+    }
+
+    boton.addEventListener('click', function () {
+      document.body.classList.toggle('modo-claro');
+      almacen.guardar('localStorage', 'tema',
+        document.body.classList.contains('modo-claro') ? 'claro' : 'oscuro');
+      pintar();
+    });
+
+    pintar();
+  }
+
+  /* ============================================================
+     2. PANTALLA DE ERROR → "RECUPERAR SISTEMA"
+     - Se muestra una vez por sesión (o siempre con ?intro=1)
+     - Se puede saltar con el botón o con la tecla Esc
+     - Respeta "reducir movimiento" del sistema
+     ============================================================ */
+  const LINEAS_TERMINAL = [
+    'Iniciando protocolo de búsqueda...',
+    'Buscando negocio: Miel & Morir Soñando',
+    '✗ ERROR 0x404 — NEGOCIO NO ENCONTRADO'
+  ];
+
+  function iniciarIntro() {
+    const pantalla = $('pantalla-error');
+    const sitio = $('sitio');
+    if (!pantalla || !sitio) return;
+
+    const forzada = new URLSearchParams(window.location.search).get('intro') === '1';
+    const yaVista = almacen.leer('sessionStorage', 'intro_vista') === '1';
+
+    let cancelada = false;
+    const pendientes = [];
+
+    function programar(funcion, ms) {
+      const id = setTimeout(function () { if (!cancelada) funcion(); }, ms);
+      pendientes.push(id);
+    }
+
+    function entrar(conFoco) {
+      cancelada = true;
+      pendientes.forEach(clearTimeout);
+      pantalla.classList.add('oculto');
+      sitio.classList.remove('oculto');
+      almacen.guardar('sessionStorage', 'intro_vista', '1');
+      window.scrollTo(0, 0);
+      if (conFoco) {
+        const titulo = sitio.querySelector('h1');
+        if (titulo) {
+          titulo.setAttribute('tabindex', '-1');
+          titulo.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    // Visitante que ya vio la intro en esta sesión: directo al sitio
+    if (yaVista && !forzada) {
+      entrar(false);
+      return;
+    }
+
+    // Botón "Saltar" (se crea solo si no existe en el HTML)
+    if (!$('boton-saltar')) {
+      const saltar = nodo('button', 'Saltar intro ▸', {
+        id: 'boton-saltar', type: 'button', 'class': 'boton-saltar mono'
       });
-    }, 400);
-  });
-}
+      pantalla.appendChild(saltar);
+    }
+    $('boton-saltar').addEventListener('click', function () { entrar(true); });
 
-// Anima la barra de progreso de 0% a 100% y luego falla
-function animarBarraProgreso() {
-  const barra = document.getElementById('barra-progreso');
-  const porcentaje = document.getElementById('porcentaje-progreso');
-  if (!barra || !porcentaje) return;
-
-  let progreso = 0;
-  const intervalo = setInterval(function () {
-    // Incremento realista: rápido al principio, lento al final
-    let avance;
-    if (progreso < 40) {
-      avance = Math.floor(Math.random() * 8) + 4;
-    } else if (progreso < 80) {
-      avance = Math.floor(Math.random() * 5) + 2;
-    } else {
-      avance = Math.floor(Math.random() * 3) + 1;
+    const botonRecuperar = $('boton-recuperar');
+    if (botonRecuperar) {
+      botonRecuperar.addEventListener('click', function () { entrar(true); });
     }
 
-    progreso += avance;
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !pantalla.classList.contains('oculto')) entrar(true);
+    });
 
-    if (progreso >= 100) {
-      progreso = 100;
-      clearInterval(intervalo);
+    function revelar() {
+      const revelacion = $('revelacion');
+      if (!revelacion) return;
+      revelacion.classList.add('visible');
+      if (botonRecuperar) botonRecuperar.focus({ preventScroll: true });
+    }
 
-      barra.style.backgroundSize = '100% 100%';
-      porcentaje.textContent = '100%';
+    function marcarFallo(barra, porcentaje) {
+      barra.style.backgroundImage = 'none';
+      barra.style.backgroundColor = 'rgba(255, 92, 92, 0.3)';
+      porcentaje.textContent = '✗ FALLÓ';
+      porcentaje.style.color = '#ff5c5c';
+      porcentaje.style.fontWeight = 'bold';
+    }
 
-      // Pausa dramática antes del fallo
-      setTimeout(function () {
-        barra.style.backgroundImage = 'none';
-        barra.style.backgroundColor = 'rgba(255, 92, 92, 0.3)';
-        porcentaje.textContent = '✗ FALLÓ';
-        porcentaje.style.color = '#ff5c5c';
-        porcentaje.style.fontWeight = 'bold';
+    // Escribe una línea letra por letra
+    function escribir(idElemento, texto, alTerminar) {
+      const elemento = $(idElemento);
+      if (!elemento) { alTerminar(); return; }
+      let i = 0;
+      elemento.textContent = '';
+      (function siguiente() {
+        if (i >= texto.length) { alTerminar(); return; }
+        elemento.textContent += texto.charAt(i);
+        i++;
+        programar(siguiente, 25);
+      })();
+    }
 
-        // Después del fallo, revela el título y el botón
-        setTimeout(revelarSistema, 800);
-      }, 700);
+    function animarBarra() {
+      const barra = $('barra-progreso');
+      const porcentaje = $('porcentaje-progreso');
+      if (!barra || !porcentaje) { revelar(); return; }
 
+      let progreso = 0;
+      (function paso() {
+        let avance;
+        if (progreso < 40) avance = Math.floor(Math.random() * 8) + 5;
+        else if (progreso < 80) avance = Math.floor(Math.random() * 5) + 3;
+        else avance = Math.floor(Math.random() * 3) + 2;
+
+        progreso = Math.min(100, progreso + avance);
+        barra.style.backgroundSize = progreso + '% 100%';
+        porcentaje.textContent = progreso + '%';
+
+        if (progreso < 100) { programar(paso, 110); return; }
+
+        // Pausa dramática antes del fallo
+        programar(function () {
+          marcarFallo(barra, porcentaje);
+          programar(revelar, 700);
+        }, 600);
+      })();
+    }
+
+    function secuencia() {
+      escribir('linea-1', LINEAS_TERMINAL[0], function () {
+        programar(function () {
+          escribir('linea-2', LINEAS_TERMINAL[1], function () {
+            programar(function () {
+              escribir('linea-3', LINEAS_TERMINAL[2], function () {
+                programar(animarBarra, 400);
+              });
+            }, 350);
+          });
+        }, 350);
+      });
+    }
+
+    const reducirMovimiento = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reducirMovimiento) {
+      // Sin animaciones: se muestra el estado final de golpe
+      LINEAS_TERMINAL.forEach(function (texto, i) {
+        const el = $('linea-' + (i + 1));
+        if (el) el.textContent = texto;
+      });
+      const barra = $('barra-progreso');
+      const porcentaje = $('porcentaje-progreso');
+      if (barra && porcentaje) {
+        barra.style.backgroundSize = '100% 100%';
+        marcarFallo(barra, porcentaje);
+      }
+      revelar();
+    } else {
+      programar(secuencia, 300);
+    }
+  }
+
+  /* ============================================================
+     3. EASTER EGG — RECETA SECRETA
+     Se abre con el botón "?" o escribiendo la palabra "miel"
+     en cualquier parte de la página (fuera de un campo de texto).
+     ============================================================ */
+  function iniciarSecreto() {
+    const boton = $('boton-secreto');
+    let dialogo = null;
+
+    function construir() {
+      dialogo = nodo('dialog', '', { 'class': 'secreto', 'aria-labelledby': 'secreto-titulo' });
+      const contenido = nodo('div', '', { 'class': 'secreto__contenido' });
+
+      contenido.appendChild(nodo('h2', '🍰 Receta secreta de Doña Carmen', { id: 'secreto-titulo' }));
+      contenido.appendChild(nodo('p', 'Bizcocho de miel dominicano:'));
+
+      const lista = nodo('ul');
+      ['3 tazas de harina', '1 taza de miel pura', '4 huevos criollos',
+        '1 cucharadita de vainilla', 'Un toque de canela'].forEach(function (ingrediente) {
+        lista.appendChild(nodo('li', ingrediente));
+      });
+      contenido.appendChild(lista);
+
+      const codigo = nodo('p');
+      codigo.appendChild(document.createTextNode('Código secreto: '));
+      codigo.appendChild(nodo('code', CONFIG.codigo));
+      contenido.appendChild(codigo);
+      contenido.appendChild(nodo('p', 'Úsalo en tu primer pedido y llévate 20% de descuento 🐝'));
+
+      const cerrar = nodo('button', 'Cerrar', { type: 'button', 'class': 'boton boton--primario' });
+      cerrar.addEventListener('click', function () { dialogo.close(); });
+      contenido.appendChild(cerrar);
+
+      dialogo.appendChild(contenido);
+      // Clic fuera de la caja = cerrar
+      dialogo.addEventListener('click', function (e) { if (e.target === dialogo) dialogo.close(); });
+      document.body.appendChild(dialogo);
+    }
+
+    function abrir() {
+      if (!dialogo) construir();
+      if (typeof dialogo.showModal === 'function') {
+        if (!dialogo.open) dialogo.showModal();
+      } else {
+        alert('Receta secreta de Doña Carmen\n\nCódigo secreto: ' + CONFIG.codigo +
+          '\nÚsalo en tu primer pedido y llévate 20% de descuento.');
+      }
+    }
+
+    if (boton) boton.addEventListener('click', abrir);
+
+    // Segunda forma (oculta) de encontrarlo: escribir "miel"
+    let secuencia = '';
+    document.addEventListener('keydown', function (e) {
+      const destino = e.target && e.target.tagName;
+      if (destino === 'INPUT' || destino === 'TEXTAREA' || destino === 'SELECT') return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+      secuencia = (secuencia + e.key.toLowerCase()).slice(-4);
+      if (secuencia === 'miel') { secuencia = ''; abrir(); }
+    });
+  }
+
+  /* ============================================================
+     4. CHATBOT "MIEL"
+     Responde por palabras clave (no es IA). Ignora acentos.
+     El orden de las reglas importa: gana la primera que coincida.
+     ============================================================ */
+  function listaPrecios() {
+    return Object.keys(CATALOGO).map(function (nombre) {
+      return nombre + ' ' + formatoRD(CATALOGO[nombre]);
+    }).join(' · ');
+  }
+
+  const REGLAS_CHAT = [
+    {
+      claves: ['historia', 'misterio', 'borraron', 'usb', 'expediente', 'que paso', '12 de marzo'],
+      respuesta: function () {
+        return 'El 12 de marzo nos borraron de Internet, pero volvimos más dulces. La historia completa está en el Inicio 🐝';
+      }
+    },
+    {
+      claves: ['seguridad', 'proteg', 'respaldo', 'hack', 'ataque', 'escudo', 'resistent'],
+      respuesta: function () {
+        return 'Ahora el sitio vive en GitHub (cada cambio queda respaldado) y seguimos un protocolo anti-borrado: verificación en dos pasos, canales alternos y plan de recuperación. Míralo en "Escudo anti-borrado", en el Inicio 🔐';
+      }
+    },
+    {
+      claves: ['descuento', 'codigo', 'promo', 'oferta', 'cupon'],
+      respuesta: function () {
+        return 'Hay un código de bienvenida para tu primer pedido. Pista: en esta web hay un botón "?" escondido 🐝';
+      }
+    },
+    {
+      claves: ['precio', 'cuanto', 'cuesta', 'costo', 'valor', 'tarifa'],
+      respuesta: function () {
+        return 'Precios desde: ' + listaPrecios() + '. Puedes calcular tu pedido en el cotizador del Catálogo.';
+      }
+    },
+    {
+      claves: ['entrega', 'envio', 'domicilio', 'delivery', 'despacho', 'express'],
+      respuesta: function () {
+        return 'Entregamos en Santo Domingo, de lunes a sábado. Elige la fecha en el formulario con al menos 48 horas de anticipación; por RD$400 extra puedes fijar el horario de entrega 🚚';
+      }
+    },
+    {
+      claves: ['donde', 'ubicacion', 'direccion', 'taller', 'mapa', 'horario', 'abren', 'abierto'],
+      respuesta: function () {
+        return 'Estamos en Calle Duarte #123, Zona Colonial, Santo Domingo. Abrimos de lunes a sábado, de 9 AM a 7 PM. El mapa está en la página de Pedidos 📍';
+      }
+    },
+    {
+      claves: ['pedido', 'pedir', 'comprar', 'ordenar', 'encargar', 'reservar', 'cotiz'],
+      respuesta: function () {
+        return 'Puedes cotizar en el Catálogo y luego entrar a Pedidos para llenar el formulario con tu fecha de entrega. Te confirmamos por WhatsApp 📱';
+      }
+    },
+    {
+      claves: ['bizcocho', 'pastel', 'torta', 'cumple', 'boda'],
+      respuesta: function () {
+        return 'Tenemos el Bizcocho de Miel (desde ' + formatoRD(CATALOGO['Bizcocho de Miel']) +
+          ') y el Bizcocho Personalizado (desde ' + formatoRD(CATALOGO['Bizcocho Personalizado']) +
+          '), ideal para cumpleaños y bodas 🍰';
+      }
+    },
+    {
+      claves: ['brownie', 'blondie', 'chocolate'],
+      respuesta: function () {
+        return 'El Brownie Fudge (chocolate 70%, nueces y sal marina) va desde ' + formatoRD(CATALOGO['Brownie Fudge']) +
+          ' y el Blondie de Coco desde ' + formatoRD(CATALOGO['Blondie de Coco']) + ' 🍫';
+      }
+    },
+    {
+      claves: ['flan', 'cheesecake', 'mango', 'frio', 'coco'],
+      respuesta: function () {
+        return 'En postres fríos tenemos Flan de Coco (desde ' + formatoRD(CATALOGO['Flan de Coco']) +
+          ') y Cheesecake de Mango (desde ' + formatoRD(CATALOGO['Cheesecake de Mango']) + ') 🍮';
+      }
+    },
+    {
+      claves: ['caja', 'cajita', 'regalo', 'obsequio'],
+      respuesta: function () {
+        return 'La Cajita Petit trae 6 mini postres (desde ' + formatoRD(CATALOGO['Cajita Regalo Petit']) +
+          ') y la Premium trae 12 con tarjeta y lazo dorado (desde ' + formatoRD(CATALOGO['Cajita Regalo Premium']) + ') 🎁';
+      }
+    },
+    {
+      claves: ['catalogo', 'menu', 'productos', 'venden', 'tienen'],
+      respuesta: function () {
+        return 'Hacemos bizcochos, brownies, postres fríos y cajitas de regalo. Mira el Catálogo completo o dime el nombre de un postre 🐝';
+      }
+    },
+    {
+      claves: ['gracias', 'genial', 'perfecto'],
+      respuesta: function () { return '¡Con gusto! Aquí estaré si se te antoja algo dulce 🐝'; }
+    },
+    {
+      claves: ['hola', 'buenas', 'saludos'],
+      respuesta: function () { return '¡Hola! Soy Miel 🐝 ¿Buscas algo dulce para hoy?'; }
+    }
+  ];
+
+  const RESPUESTA_DEFECTO = 'Aún estoy aprendiendo 🐝 Prueba con: catálogo, precios, entrega, pedido, seguridad o historia.';
+
+  function responderChat(pregunta) {
+    const texto = normalizar(pregunta);
+    for (let i = 0; i < REGLAS_CHAT.length; i++) {
+      const regla = REGLAS_CHAT[i];
+      const coincide = regla.claves.some(function (clave) { return texto.indexOf(clave) !== -1; });
+      if (coincide) return regla.respuesta();
+    }
+    return RESPUESTA_DEFECTO;
+  }
+
+  function iniciarChat() {
+    const boton = $('boton-chat');
+    const panel = $('asistente');
+    const formulario = $('chat-formulario');
+    const entrada = $('chat-entrada');
+    const mensajes = $('chat-mensajes');
+    if (!boton || !panel || !formulario || !entrada || !mensajes) return;
+
+    boton.setAttribute('aria-expanded', 'false');
+
+    function alternar(abrir) {
+      panel.classList.toggle('abierto', abrir);
+      boton.setAttribute('aria-expanded', String(abrir));
+      if (abrir) entrada.focus();
+    }
+
+    function agregar(texto, clase) {
+      mensajes.appendChild(nodo('p', texto, { 'class': clase }));
+      mensajes.scrollTop = mensajes.scrollHeight;
+    }
+
+    boton.addEventListener('click', function () {
+      alternar(!panel.classList.contains('abierto'));
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panel.classList.contains('abierto')) {
+        alternar(false);
+        boton.focus();
+      }
+    });
+
+    formulario.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const pregunta = entrada.value.trim();
+      if (!pregunta) return;
+
+      agregar(pregunta, 'mensaje-usuario');
+      entrada.value = '';
+      setTimeout(function () { agregar(responderChat(pregunta), 'mensaje-bot'); }, 400);
+    });
+  }
+
+  /* ============================================================
+     5. FILTROS DEL CATÁLOGO
+     ============================================================ */
+  function iniciarFiltros() {
+    const botones = document.querySelectorAll('.filtro');
+    const productos = document.querySelectorAll('.producto');
+    if (!botones.length) return;
+
+    botones.forEach(function (boton) {
+      boton.setAttribute('aria-pressed', boton.classList.contains('activo') ? 'true' : 'false');
+
+      boton.addEventListener('click', function () {
+        botones.forEach(function (b) {
+          b.classList.remove('activo');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        boton.classList.add('activo');
+        boton.setAttribute('aria-pressed', 'true');
+
+        const filtro = boton.dataset.filtro;
+        productos.forEach(function (producto) {
+          const visible = filtro === 'todos' || producto.dataset.categoria === filtro;
+          producto.classList.toggle('oculto-producto', !visible);
+        });
+      });
+    });
+  }
+
+  /* ============================================================
+     6. COTIZADOR EN LÍNEA + API DE TASA DE CAMBIO (USD)
+     Si la API falla, el cotizador sigue funcionando en pesos.
+     ============================================================ */
+  async function obtenerTasaUSD() {
+    const guardada = parseFloat(almacen.leer('sessionStorage', 'tasa_usd'));
+    if (guardada > 0) return guardada;
+
+    try {
+      const control = new AbortController();
+      const limite = setTimeout(function () { control.abort(); }, 4000);
+      const respuesta = await fetch('https://open.er-api.com/v6/latest/USD', { signal: control.signal });
+      clearTimeout(limite);
+      if (!respuesta.ok) return null;
+
+      const datos = await respuesta.json();
+      const tasa = datos && datos.rates && datos.rates.DOP;
+      if (typeof tasa === 'number' && tasa > 0) {
+        almacen.guardar('sessionStorage', 'tasa_usd', String(tasa));
+        return tasa;
+      }
+    } catch (e) { /* sin conexión o API caída: seguimos sin dólares */ }
+    return null;
+  }
+
+  function linea(etiqueta, valor, resaltar) {
+    const div = nodo('div');
+    div.appendChild(document.createTextNode(etiqueta));
+    if (resaltar) div.appendChild(nodo('strong', valor));
+    else div.appendChild(document.createTextNode(valor));
+    return div;
+  }
+
+  function iniciarCotizador() {
+    const formulario = $('cotizador');
+    const salida = $('resultado-cotizador');
+    if (!formulario || !salida) return;
+
+    // Botones "Cotizar" de cada producto: preseleccionan el producto
+    document.querySelectorAll('.boton-cotizar').forEach(function (boton) {
+      boton.addEventListener('click', function () {
+        const select = $('producto-cotizar');
+        const nombre = boton.dataset.producto;
+        for (let i = 0; i < select.options.length; i++) {
+          if (select.options[i].value.indexOf(nombre + '|') === 0) {
+            select.selectedIndex = i;
+            break;
+          }
+        }
+        formulario.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        select.focus({ preventScroll: true });
+      });
+    });
+
+    formulario.addEventListener('submit', async function (evento) {
+      evento.preventDefault();
+
+      const selProducto = $('producto-cotizar');
+      const selTamano = $('porciones-cotizar');
+      const selExtra = $('extras-cotizar');
+
+      salida.textContent = '';
+
+      if (!selProducto.value) {
+        salida.textContent = '⚠️ Selecciona un producto primero.';
+        return;
+      }
+
+      const partes = selProducto.value.split('|');
+      const nombre = partes[0];
+      const base = parseFloat(partes[1]);
+      const factor = parseFloat(selTamano.value);
+      const extra = parseFloat(selExtra.value);
+      const total = base * factor + extra;
+
+      const tamanoTexto = selTamano.options[selTamano.selectedIndex].text;
+      const extraTexto = selExtra.options[selExtra.selectedIndex].text;
+
+      salida.appendChild(linea('🍰 Producto: ', nombre, false));
+      salida.appendChild(linea('Precio base: ', formatoRD(base), false));
+      salida.appendChild(linea('Tamaño: ', tamanoTexto, false));
+      salida.appendChild(linea('Extra: ', extraTexto, false));
+      salida.appendChild(linea('Total estimado: ', formatoRD(total), true));
+
+      const lineaUSD = nodo('small', 'Consultando tasa del dólar…');
+      const lineaAviso = nodo('div');
+      lineaAviso.appendChild(nodo('small', 'El precio final puede variar según la decoración. Confirma por WhatsApp.'));
+      salida.appendChild(lineaUSD);
+      salida.appendChild(nodo('br'));
+      salida.appendChild(lineaAviso);
+
+      // Guardar la cotización para precargarla en el formulario de pedidos
+      almacen.guardar('localStorage', 'miel_cotizacion', JSON.stringify({
+        producto: nombre,
+        nota: 'Cotización: ' + tamanoTexto + ' · ' + extraTexto + ' · Total estimado ' + formatoRD(total)
+      }));
+
+      const irPedido = $('boton-ir-pedido');
+      if (irPedido) irPedido.style.display = 'inline-block';
+
+      // API externa: tasa de cambio del día
+      const tasa = await obtenerTasaUSD();
+      if (tasa) {
+        lineaUSD.textContent = '≈ US$' + (total / tasa).toFixed(2) +
+          ' (tasa del día: RD$' + tasa.toFixed(2) + ' por US$1) · ';
+        lineaUSD.appendChild(nodo('a', 'Rates By Exchange Rate API', {
+          href: 'https://www.exchangerate-api.com', target: '_blank', rel: 'noopener'
+        }));
+      } else {
+        lineaUSD.textContent = '';
+      }
+    });
+  }
+
+  /* ============================================================
+     7. FORMULARIO DE PEDIDOS (validación, descuento, WhatsApp)
+     ============================================================ */
+  function iniciarPedido() {
+    const formulario = $('formulario-contacto');
+    const estado = $('estado-formulario');
+    if (!formulario || !estado) return;
+
+    const selProducto = $('producto-contacto');
+    const inputFecha = $('fecha-entrega');
+    const inputTelefono = $('telefono');
+    const inputNotas = $('notas');               // opcional (textarea)
+    const inputCodigo = $('codigo-descuento');
+    const botonAplicar = $('aplicar-codigo');
+    const estadoCodigo = $('estado-codigo');
+
+    const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    // ---- Precargar lo cotizado en el catálogo ----
+    const cotizacion = almacen.leer('localStorage', 'miel_cotizacion');
+    if (cotizacion) {
+      try {
+        const datos = JSON.parse(cotizacion);
+        if (selProducto) {
+          for (let i = 0; i < selProducto.options.length; i++) {
+            if (selProducto.options[i].value === datos.producto) {
+              selProducto.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        if (inputNotas && datos.nota) inputNotas.value = datos.nota;
+      } catch (e) { /* dato dañado: se ignora */ }
+      almacen.borrar('localStorage', 'miel_cotizacion');
+    }
+
+    // ---- Fecha mínima: 2 días después de hoy (48 horas) ----
+    const hoyMas2 = new Date();
+    hoyMas2.setDate(hoyMas2.getDate() + 2);
+    const fechaMinima = aISO(hoyMas2);
+    if (inputFecha) inputFecha.min = fechaMinima;
+
+    // ---- Teléfono: solo números ----
+    if (inputTelefono) {
+      inputTelefono.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+      });
+    }
+
+    // ---- Código de descuento (solo primer pedido) ----
+    function codigoValido(valor) {
+      return valor.trim().toUpperCase() === CONFIG.codigo;
+    }
+
+    function pintarCodigo(tipo, mensaje) {
+      if (!estadoCodigo) return;
+      estadoCodigo.className = 'estado-codigo ' + tipo;
+      estadoCodigo.textContent = mensaje;
+    }
+
+    function bloquearCodigo() {
+      if (!inputCodigo || !botonAplicar) return;
+      inputCodigo.disabled = true;
+      inputCodigo.placeholder = 'Código ya utilizado';
+      botonAplicar.disabled = true;
+      botonAplicar.textContent = 'Usado';
+      pintarCodigo('usado', '🐝 Ya usaste tu código de bienvenida. ¡Gracias por tu primer pedido!');
+    }
+
+    if (almacen.leer('localStorage', 'miel_descuento_usado') === 'true') {
+      bloquearCodigo();
+    }
+
+    if (inputCodigo && botonAplicar) {
+      botonAplicar.addEventListener('click', function () {
+        const valor = inputCodigo.value.trim();
+        if (!valor) {
+          pintarCodigo('invalido', '⚠ Escribe un código primero.');
+        } else if (codigoValido(valor)) {
+          pintarCodigo('valido', '✅ ¡Código válido! Tendrás 20% de descuento en este primer pedido.');
+        } else {
+          pintarCodigo('invalido', '⚠ Código no reconocido. Verifica e intenta de nuevo.');
+        }
+      });
+
+      // Enter dentro del campo aplica el código en lugar de enviar el pedido
+      inputCodigo.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          botonAplicar.click();
+        }
+      });
+    }
+
+    // ---- Mensajes de estado ----
+    function mostrarError(mensaje, idCampo) {
+      estado.className = 'estado-formulario error';
+      estado.textContent = '⚠ ' + mensaje;
+      const campo = idCampo ? $(idCampo) : null;
+      if (campo) campo.focus();
+    }
+
+    // ---- Envío ----
+    formulario.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      estado.className = 'estado-formulario';
+      estado.textContent = '';
+
+      const nombre = $('nombre').value.trim();
+      const correo = $('correo').value.trim();
+      const telefono = inputTelefono.value.replace(/\D/g, '');
+      const producto = selProducto.value;
+      const fecha = inputFecha.value;
+      const direccion = $('direccion').value.trim();
+      const notas = inputNotas ? inputNotas.value.trim() : '';
+      const codigo = inputCodigo && !inputCodigo.disabled ? inputCodigo.value.trim() : '';
+
+      if (nombre.length < 3) return mostrarError('Por favor escribe tu nombre completo.', 'nombre');
+      if (!REGEX_CORREO.test(correo)) return mostrarError('El correo no parece válido.', 'correo');
+      if (telefono.length !== 10) return mostrarError('El teléfono debe tener 10 dígitos (ej: 8095550123).', 'telefono');
+      if (!producto) return mostrarError('Selecciona un producto del catálogo.', 'producto-contacto');
+      if (!fecha) return mostrarError('Debes elegir una fecha de entrega.', 'fecha-entrega');
+      if (fecha < fechaMinima) {
+        return mostrarError('La fecha de entrega debe ser al menos 48 horas después de hoy.', 'fecha-entrega');
+      }
+      if (new Date(fecha + 'T12:00:00').getDay() === 0) {
+        return mostrarError('Entregamos de lunes a sábado. Elige otra fecha.', 'fecha-entrega');
+      }
+      if (direccion.length < 8) return mostrarError('Por favor escribe una dirección más completa.', 'direccion');
+
+      let aplicaDescuento = false;
+      if (codigo) {
+        if (!codigoValido(codigo)) {
+          return mostrarError('El código de descuento no es válido. Corrígelo o déjalo vacío.', 'codigo-descuento');
+        }
+        aplicaDescuento = true;
+      }
+
+      // Mensaje prellenado para WhatsApp
+      const textoWhatsApp = [
+        'Hola, quiero hacer un pedido en Miel & Morir Soñando:',
+        '• Producto: ' + producto,
+        '• Fecha de entrega: ' + formatearFecha(fecha),
+        '• Dirección: ' + direccion,
+        '• Nombre: ' + nombre,
+        '• Teléfono: ' + telefono,
+        notas ? '• Notas: ' + notas : '',
+        aplicaDescuento ? '• Código: ' + CONFIG.codigo + ' (20% de descuento)' : ''
+      ].filter(Boolean).join('\n');
+
+      const enlaceWhatsApp = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(textoWhatsApp);
+
+      // Confirmación (todo con textContent: sin riesgo de inyección)
+      estado.className = 'estado-formulario exito';
+      estado.textContent = '';
+
+      const l1 = nodo('div');
+      l1.append('🍰 ¡Gracias, ', nodo('strong', nombre.split(' ')[0]), '!');
+      const l2 = nodo('div');
+      l2.append('Tu pedido de ', nodo('strong', producto), ' fue registrado para el ' + formatearFecha(fecha) + '.');
+      estado.append(l1, l2);
+
+      if (aplicaDescuento && CATALOGO[producto]) {
+        const base = CATALOGO[producto];
+        const conDescuento = base * (1 - CONFIG.descuento);
+        estado.appendChild(nodo('div',
+          '🎁 Con tu código ' + CONFIG.codigo + ', el precio desde ' + formatoRD(base) +
+          ' baja a ' + formatoRD(conDescuento) + '.'));
+      }
+
+      const boton = nodo('a', '📱 Confirmar por WhatsApp', {
+        href: enlaceWhatsApp, target: '_blank', rel: 'noopener', 'class': 'boton boton--primario'
+      });
+      boton.style.marginTop = '12px';
+      estado.appendChild(boton);
+      estado.appendChild(nodo('br'));
+      estado.appendChild(nodo('small', 'Esta es una demostración académica. No se envió ningún correo real.'));
+
+      if (aplicaDescuento) {
+        almacen.guardar('localStorage', 'miel_descuento_usado', 'true');
+      }
+
+      formulario.reset();
+      if (estadoCodigo) { estadoCodigo.className = 'estado-codigo'; estadoCodigo.textContent = ''; }
+      if (aplicaDescuento) bloquearCodigo();
+      estado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  /* ============================================================
+     8. ESCUDO ANTI-BORRADO (checklist de resistencia)
+     Cada casilla es una capa de protección; el nivel se guarda.
+     ============================================================ */
+  function iniciarEscudo() {
+    const casillas = document.querySelectorAll('[data-escudo]');
+    if (!casillas.length) return;
+
+    const relleno = $('escudo-relleno');
+    const porcentajeTexto = $('escudo-porcentaje');
+    const estadoTexto = $('escudo-estado');
+    const medidor = $('escudo-medidor');
+    const panel = $('escudo-panel');
+
+    const guardado = almacen.leer('localStorage', 'miel_escudo');
+    if (guardado) {
+      try {
+        const marcadas = JSON.parse(guardado);
+        casillas.forEach(function (c) { c.checked = marcadas.indexOf(c.dataset.escudo) !== -1; });
+      } catch (e) { /* dato dañado: se usan los valores del HTML */ }
+    }
+
+    function actualizar() {
+      const total = casillas.length;
+      const marcadas = [];
+      casillas.forEach(function (c) { if (c.checked) marcadas.push(c.dataset.escudo); });
+
+      const porcentaje = Math.round((marcadas.length / total) * 100);
+      let nivel, mensaje;
+
+      if (porcentaje === 100) {
+        nivel = 'blindado';
+        mensaje = '✅ SISTEMA BLINDADO — Miel & Morir Soñando no se borra otra vez.';
+      } else if (porcentaje >= 40) {
+        nivel = 'parcial';
+        mensaje = '🛡 PROTECCIÓN PARCIAL — faltan ' + (total - marcadas.length) + ' capas por activar.';
+      } else {
+        nivel = 'riesgo';
+        mensaje = '⚠ SISTEMA EN RIESGO — activa más capas de protección.';
+      }
+
+      if (relleno) relleno.style.width = porcentaje + '%';
+      if (porcentajeTexto) porcentajeTexto.textContent = porcentaje + '%';
+      if (estadoTexto) estadoTexto.textContent = mensaje;
+      if (medidor) medidor.setAttribute('aria-valuenow', String(porcentaje));
+      if (panel) panel.setAttribute('data-nivel', nivel);
+
+      almacen.guardar('localStorage', 'miel_escudo', JSON.stringify(marcadas));
+    }
+
+    casillas.forEach(function (c) { c.addEventListener('change', actualizar); });
+    actualizar();
+  }
+
+  /* ============================================================
+     9. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
+     ============================================================ */
+  function iniciarMapa() {
+    const contenedor = $('mapa');
+    if (!contenedor) return;
+
+    if (typeof L === 'undefined') {
+      contenedor.textContent = 'El mapa no pudo cargarse. Revisa tu conexión.';
+      contenedor.style.padding = '20px';
       return;
     }
 
-    barra.style.backgroundSize = progreso + '% 100%';
-    porcentaje.textContent = progreso + '%';
-  }, 180);
-}
+    const mapa = L.map('mapa', { scrollWheelZoom: false }).setView(CONFIG.taller, 14);
 
-// Revela el título glitch y el botón después de la terminal
-function revelarSistema() {
-  const revelacion = document.getElementById('revelacion');
-  if (!revelacion) return;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(mapa);
 
-  revelacion.classList.add('visible');
-  console.log('✨ Sistema revelado. Esperando acción del usuario.');
-}
+    L.marker(CONFIG.taller).addTo(mapa).bindPopup(
+      '<strong>🐝 Miel &amp; Morir Soñando</strong>' +
+      'Taller principal<br>' +
+      'Calle Duarte #123, Zona Colonial<br>' +
+      'Santo Domingo, R.D.<br>' +
+      '<small>Abierto de lunes a sábado · 9 AM – 7 PM</small>'
+    ).openPopup();
 
-// 🎬 ARRANQUE DE LA SECUENCIA (defer garantiza DOM listo)
-if (document.getElementById('pantalla-error')) {
-  console.log('🎬 Iniciando secuencia de terminal en 300ms...');
-  setTimeout(function () {
-    console.log('▶ Ejecutando terminal...');
-    iniciarSecuenciaTerminal();
-  }, 300);
-}
-
-/* ============================================================
-   2. PANTALLA DE ERROR → RECUPERAR SISTEMA
-   ============================================================ */
-
-const pantallaError = document.getElementById('pantalla-error');
-const sitio = document.getElementById('sitio');
-const botonRecuperar = document.getElementById('boton-recuperar');
-
-if (botonRecuperar) {
-  botonRecuperar.addEventListener('click', function () {
-    pantallaError.classList.add('oculto');
-    sitio.classList.remove('oculto');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-/* ============================================================
-   3. MODO CLARO / OSCURO
-   ============================================================ */
-
-const botonTema = document.getElementById('boton-tema');
-if (botonTema) {
-  botonTema.addEventListener('click', function () {
-    document.body.classList.toggle('modo-claro');
-    const esClaro = document.body.classList.contains('modo-claro');
-    botonTema.textContent = esClaro ? '☀️' : '🌙';
-  });
-}
-
-/* ============================================================
-   4. EASTER EGG — RECETA SECRETA
-   ============================================================ */
-
-const botonSecreto = document.getElementById('boton-secreto');
-if (botonSecreto) {
-  botonSecreto.addEventListener('click', function () {
-    alert(
-      '🍰 RECETA SECRETA DE LA ABUELA CARMEN 🍰\n\n' +
-      'Bizcocho de miel dominicano:\n' +
-      '• 3 tazas de harina\n' +
-      '• 1 taza de miel pura\n' +
-      '• 4 huevos criollos\n' +
-      '• 1 cucharadita de vainilla\n' +
-      '• Un toque de canela\n\n' +
-      'Código secreto: RESURGIR20\n' +
-      'Úsalo en tu primer pedido y llévate 20% de descuento 🐝'
-    );
-  });
-}
-
-/* ============================================================
-   5. CHATBOT MIEL
-   ============================================================ */
-
-const botonChat = document.getElementById('boton-chat');
-const asistente = document.getElementById('asistente');
-const chatFormulario = document.getElementById('chat-formulario');
-const chatEntrada = document.getElementById('chat-entrada');
-const chatMensajes = document.getElementById('chat-mensajes');
-
-if (botonChat) {
-  botonChat.addEventListener('click', function () {
-    asistente.classList.toggle('abierto');
-    if (asistente.classList.contains('abierto')) {
-      chatEntrada.focus();
-    }
-  });
-}
-
-if (chatFormulario) {
-  chatFormulario.addEventListener('submit', function (evento) {
-    evento.preventDefault();
-    const pregunta = chatEntrada.value.trim().toLowerCase();
-    if (pregunta === '') return;
-
-    agregarMensaje(chatEntrada.value, 'mensaje-usuario');
-
-    let respuesta;
-
-    if (pregunta.includes('hola') || pregunta.includes('buenas')) {
-      respuesta = '¡Hola! Soy Miel 🐝 ¿Buscas algo dulce para hoy?';
-    } else if (pregunta.includes('bizcocho')) {
-      respuesta = 'Nuestros bizcochos son famosos: vainilla, chocolate, miel y zanahoria. Todos con merengue y cereza 🍰';
-    } else if (pregunta.includes('brownie') || pregunta.includes('brownies')) {
-      respuesta = '¡Los brownies son nuestra debilidad! Fudge, nueces y un toque de sal marina. Desde RD$350.';
-    } else if (pregunta.includes('precio') || pregunta.includes('cuanto') || pregunta.includes('cuesta')) {
-      respuesta = 'Los precios empiezan en RD$350 por brownies y RD$1,200 por bizcochos personalizados. ¿Te paso el catálogo completo?';
-    } else if (pregunta.includes('entrega') || pregunta.includes('envio') || pregunta.includes('domicilio')) {
-      respuesta = 'Hacemos entregas en Santo Domingo el mismo día si pides antes de las 10 AM. También enviamos al interior del país 📦';
-    } else if (pregunta.includes('historia') || pregunta.includes('misterio') || pregunta.includes('borraron')) {
-      respuesta = 'Nos borraron de Internet el 12 de marzo... pero volvimos más dulces. Puedes leer la historia completa en la página de Inicio 🐝';
-    } else if (pregunta.includes('pedido') || pregunta.includes('comprar') || pregunta.includes('ordenar')) {
-      respuesta = '¡Perfecto! Entra a la página de Pedidos y llena el formulario con fecha de entrega. Te confirmamos por WhatsApp 📱';
-    } else if (pregunta.includes('seguridad') || pregunta.includes('proteger')) {
-      respuesta = 'Ahora tenemos respaldos automáticos, contraseñas seguras y verificación en dos pasos. ¡No nos vuelven a borrar! 🔐';
-    } else {
-      respuesta = 'Aún estoy aprendiendo 🐝 Prueba con: bizcocho, brownie, precio, entrega o pedido.';
-    }
-
-    setTimeout(function () {
-      agregarMensaje(respuesta, 'mensaje-bot');
-    }, 400);
-
-    chatEntrada.value = '';
-  });
-}
-
-function agregarMensaje(texto, clase) {
-  const mensaje = document.createElement('p');
-  mensaje.className = clase;
-  mensaje.textContent = texto;
-  chatMensajes.appendChild(mensaje);
-  chatMensajes.scrollTop = chatMensajes.scrollHeight;
-}
-
-console.log('🐝 Miel & Morir Soñando: sistema iniciado.');
-
-/* ============================================================
-   6. FILTROS DEL CATÁLOGO
-   ============================================================ */
-
-const botonesFiltro = document.querySelectorAll('.filtro');
-const productos = document.querySelectorAll('.producto');
-
-botonesFiltro.forEach(function (boton) {
-  boton.addEventListener('click', function () {
-    botonesFiltro.forEach(function (b) { b.classList.remove('activo'); });
-    boton.classList.add('activo');
-
-    const filtro = boton.dataset.filtro;
-
-    productos.forEach(function (producto) {
-      if (filtro === 'todos' || producto.dataset.categoria === filtro) {
-        producto.classList.remove('oculto-producto');
-      } else {
-        producto.classList.add('oculto-producto');
-      }
-    });
-  });
-});
-
-/* ============================================================
-   7. COTIZADOR EN LÍNEA
-   ============================================================ */
-
-const formCotizador = document.getElementById('cotizador');
-const resultadoCotizador = document.getElementById('resultado-cotizador');
-
-if (formCotizador) {
-  formCotizador.addEventListener('submit', function (evento) {
-    evento.preventDefault();
-
-    const productoSeleccionado = document.getElementById('producto-cotizar').value;
-    const porciones = parseFloat(document.getElementById('porciones-cotizar').value);
-    const extras = parseFloat(document.getElementById('extras-cotizar').value);
-
-    if (!productoSeleccionado) {
-      resultadoCotizador.innerHTML = '⚠️ Selecciona un producto primero.';
-      return;
-    }
-
-    const partes = productoSeleccionado.split('|');
-    const nombre = partes[0];
-    const base = parseFloat(partes[1]);
-
-    const total = (base * porciones) + extras;
-
-    resultadoCotizador.innerHTML =
-      '🍰 Producto: <strong>' + nombre + '</strong><br>' +
-      'Precio base: RD$' + base.toLocaleString('es-DO') + '<br>' +
-      'Total estimado: <strong>RD$' + total.toLocaleString('es-DO') + '</strong><br>' +
-      '<small>Precio final puede variar según decoración. Confirma por WhatsApp.</small>';
-
-    // Guardar el producto cotizado y mostrar botón de pedido
-    localStorage.setItem('producto_cotizado', nombre);
-
-    const botonIrPedido = document.getElementById('boton-ir-pedido');
-    if (botonIrPedido) {
-      botonIrPedido.style.display = 'inline-block';
-    }
-  });
-}
-
-/* ============================================================
-   8. BOTONES "COTIZAR" DE PRODUCTOS
-   ============================================================ */
-
-const botonesCotizar = document.querySelectorAll('.boton-cotizar');
-
-botonesCotizar.forEach(function (boton) {
-  boton.addEventListener('click', function () {
-    const nombre = boton.dataset.producto;
-
-    const select = document.getElementById('producto-cotizar');
-    if (select) {
-      for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value.startsWith(nombre + '|')) {
-          select.selectedIndex = i;
-          break;
-        }
-      }
-      document.getElementById('cotizador').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  });
-});
-
-/* ============================================================
-   9. FORMULARIO DE PEDIDOS
-   ============================================================ */
-
-const formularioContacto = document.getElementById('formulario-contacto');
-const estadoFormulario = document.getElementById('estado-formulario');
-
-if (formularioContacto) {
-
-  // Precargar producto cotizado desde la página de servicios
-  const productoGuardado = localStorage.getItem('producto_cotizado');
-  if (productoGuardado) {
-    const selectProducto = document.getElementById('producto-contacto');
-    if (selectProducto) {
-      for (let i = 0; i < selectProducto.options.length; i++) {
-        if (selectProducto.options[i].value === productoGuardado) {
-          selectProducto.selectedIndex = i;
-          break;
-        }
-      }
-    }
-    localStorage.removeItem('producto_cotizado');
-  }
-   
-  // Configurar fecha mínima: 48 horas a partir de hoy
-  const inputFecha = document.getElementById('fecha-entrega');
-  if (inputFecha) {
-    const hoy = new Date();
-    hoy.setDate(hoy.getDate() + 2);
-    const yyyy = hoy.getFullYear();
-    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-    const dd = String(hoy.getDate()).padStart(2, '0');
-    inputFecha.min = `${yyyy}-${mm}-${dd}`;
+    L.circle(CONFIG.taller, {
+      color: '#F2B705',
+      fillColor: '#F2B705',
+      fillOpacity: 0.1,
+      radius: 350
+    }).addTo(mapa);
   }
 
-  formularioContacto.addEventListener('submit', function (evento) {
-    evento.preventDefault();
-    estadoFormulario.className = 'estado-formulario';
-    estadoFormulario.textContent = '';
-
-    const nombre = document.getElementById('nombre').value.trim();
-    const correo = document.getElementById('correo').value.trim();
-    const telefono = document.getElementById('telefono').value.trim();
-    const producto = document.getElementById('producto-contacto').value;
-
-       /* ---- CÓDIGO DE DESCUENTO (solo primer pedido) ---- */
-  const inputCodigo = document.getElementById('codigo-descuento');
-  const botonAplicar = document.getElementById('aplicar-codigo');
-  const estadoCodigo = document.getElementById('estado-codigo');
-  const descuentoYaUsado = localStorage.getItem('miel_descuento_usado') === 'true';
-
-  if (descuentoYaUsado && inputCodigo && botonAplicar) {
-    // Ya usó el descuento: deshabilitar
-    inputCodigo.disabled = true;
-    inputCodigo.placeholder = 'Código ya utilizado';
-    botonAplicar.disabled = true;
-    botonAplicar.textContent = 'Usado';
-    estadoCodigo.className = 'estado-codigo usado';
-    estadoCodigo.innerHTML =
-      '🐝 Ya usaste tu código de bienvenida. ¡Gracias por tu primer pedido!';
-  } else if (botonAplicar && inputCodigo) {
-    botonAplicar.addEventListener('click', function () {
-      const valor = inputCodigo.value.trim().toUpperCase();
-
-      if (valor === 'RESURGIR20') {
-        estadoCodigo.className = 'estado-codigo valido';
-        estadoCodigo.innerHTML =
-          '✅ ¡Código válido! Tendrás <strong>20% de descuento</strong> en este primer pedido.';
-      } else if (valor === '') {
-        estadoCodigo.className = 'estado-codigo invalido';
-        estadoCodigo.textContent = '⚠ Escribe un código primero.';
-      } else {
-        estadoCodigo.className = 'estado-codigo invalido';
-        estadoCodigo.textContent = '⚠ Código no reconocido. Verifica e intenta de nuevo.';
-      }
-    });
-  }
-
-     // Filtrar teléfono: solo números
-  const inputTelefono = document.getElementById('telefono');
-  if (inputTelefono) {
-    inputTelefono.addEventListener('input', function (e) {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-    });
-  }
-    const fecha = document.getElementById('fecha-entrega').value;
-    const direccion = document.getElementById('direccion').value.trim();
-
-    if (nombre.length < 3) {
-      return mostrarError('Por favor escribe tu nombre completo.');
-    }
-
-    if (!correo.includes('@') || !correo.includes('.')) {
-      return mostrarError('El correo no parece válido.');
-    }
-
-    if (telefono.replace(/\D/g, '').length < 10) {
-      return mostrarError('El teléfono debe tener al menos 10 dígitos.');
-    }
-
-    if (!producto) {
-      return mostrarError('Selecciona un producto del catálogo.');
-    }
-
-    if (!fecha) {
-      return mostrarError('Debes elegir una fecha de entrega.');
-    }
-
-    const fechaElegida = new Date(fecha + 'T12:00:00');
-    const fechaMinima = new Date();
-    fechaMinima.setDate(fechaMinima.getDate() + 2);
-    fechaMinima.setHours(0, 0, 0, 0);
-
-    if (fechaElegida < fechaMinima) {
-      return mostrarError('La fecha de entrega debe ser al menos 48 horas después de hoy.');
-    }
-
-    if (direccion.length < 8) {
-      return mostrarError('Por favor escribe una dirección más completa.');
-    }
-
-         // Verificar código de descuento si se ingresó
-    const codigoIngresado = document.getElementById('codigo-descuento');
-    if (codigoIngresado && codigoIngresado.value.trim().toUpperCase() === 'RESURGIR20') {
-    
-       // Marcar como usado en este navegador (solo primer pedido)
-      localStorage.setItem('miel_descuento_usado', 'true');
-    }
-
-    estadoFormulario.className = 'estado-formulario exito';
-    estadoFormulario.innerHTML =
-      '🍰 ¡Gracias, <strong>' + nombre.split(' ')[0] + '</strong>!<br>' +
-      'Tu pedido de <strong>' + producto + '</strong> fue registrado para el ' +
-      formatearFecha(fecha) + '.<br>' +
-      '<small>Esta es una demostración académica. No se envió ningún correo real.</small>';
-
-    formularioContacto.reset();
-  });
-}
-
-function mostrarError(mensaje) {
-  estadoFormulario.className = 'estado-formulario error';
-  estadoFormulario.textContent = '⚠ ' + mensaje;
-}
-
-function formatearFecha(iso) {
-  const partes = iso.split('-');
-  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-  return partes[2] + ' de ' + meses[parseInt(partes[1], 10) - 1] + ' de ' + partes[0];
-}
-
-/* ============================================================
-   10. MAPA INTERACTIVO (LEAFLET)
-   ============================================================ */
-
-const contenedorMapa = document.getElementById('mapa');
-
-if (contenedorMapa && typeof L !== 'undefined') {
-  const latitud = 18.4861;
-  const longitud = -69.9312;
-
-  const mapa = L.map('mapa').setView([latitud, longitud], 14);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 19
-  }).addTo(mapa);
-
-  const marcador = L.marker([latitud, longitud]).addTo(mapa);
-
-  marcador.bindPopup(
-    '<strong>🐝 Miel & Morir Soñando</strong>' +
-    'Taller principal<br>' +
-    'Calle Duarte #123, Zona Colonial<br>' +
-    'Santo Domingo, R.D.<br>' +
-    '<small>Abierto de lunes a sábado · 9 AM – 7 PM</small>'
-  ).openPopup();
-
-  L.circle([latitud, longitud], {
-    color: '#F2B705',
-    fillColor: '#F2B705',
-    fillOpacity: 0.1,
-    radius: 350
-  }).addTo(mapa);
-
-} else if (contenedorMapa && typeof L === 'undefined') {
-  contenedorMapa.innerHTML =
-    '<p style="padding:20px;color:#b8b0c9;">El mapa no pudo cargarse. Revisa tu conexión.</p>';
-}
-
-console.log('📍 Mapa y formulario cargados correctamente.');
-
+  /* ============================================================
+     ARRANQUE
+     ============================================================ */
+  iniciarTema();
+  iniciarIntro();
+  iniciarSecreto();
+  iniciarChat();
+  iniciarFiltros();
+  iniciarCotizador();
+  iniciarPedido();
+  iniciarEscudo();
+  iniciarMapa();
+})();
