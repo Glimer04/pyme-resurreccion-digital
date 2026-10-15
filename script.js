@@ -513,29 +513,8 @@
   }
 
   /* ============================================================
-     6. COTIZADOR EN LÍNEA + API DE TASA DE CAMBIO (USD)
-     Si la API falla, el cotizador sigue funcionando en pesos.
+     6. COTIZADOR EN LÍNEA
      ============================================================ */
-  async function obtenerTasaUSD() {
-    const guardada = parseFloat(almacen.leer('sessionStorage', 'tasa_usd'));
-    if (guardada > 0) return guardada;
-
-    try {
-      const control = new AbortController();
-      const limite = setTimeout(function () { control.abort(); }, 4000);
-      const respuesta = await fetch('https://open.er-api.com/v6/latest/USD', { signal: control.signal });
-      clearTimeout(limite);
-      if (!respuesta.ok) return null;
-
-      const datos = await respuesta.json();
-      const tasa = datos && datos.rates && datos.rates.DOP;
-      if (typeof tasa === 'number' && tasa > 0) {
-        almacen.guardar('sessionStorage', 'tasa_usd', String(tasa));
-        return tasa;
-      }
-    } catch (e) { /* sin conexión o API caída: seguimos sin dólares */ }
-    return null;
-  }
 
   function linea(etiqueta, valor, resaltar) {
     const div = nodo('div');
@@ -566,7 +545,7 @@
       });
     });
 
-    formulario.addEventListener('submit', async function (evento) {
+        formulario.addEventListener('submit', function (evento) {
       evento.preventDefault();
 
       const selProducto = $('producto-cotizar');
@@ -596,10 +575,8 @@
       salida.appendChild(linea('Extra: ', extraTexto, false));
       salida.appendChild(linea('Total estimado: ', formatoRD(total), true));
 
-      const lineaUSD = nodo('small', 'Consultando tasa del dólar…');
       const lineaAviso = nodo('div');
       lineaAviso.appendChild(nodo('small', 'El precio final puede variar según la decoración. Confirma por WhatsApp.'));
-      salida.appendChild(lineaUSD);
       salida.appendChild(nodo('br'));
       salida.appendChild(lineaAviso);
 
@@ -611,20 +588,7 @@
 
       const irPedido = $('boton-ir-pedido');
       if (irPedido) irPedido.style.display = 'inline-block';
-
-      // API externa: tasa de cambio del día
-      const tasa = await obtenerTasaUSD();
-      if (tasa) {
-        lineaUSD.textContent = '≈ US$' + (total / tasa).toFixed(2) +
-          ' (tasa del día: RD$' + tasa.toFixed(2) + ' por US$1) · ';
-        lineaUSD.appendChild(nodo('a', 'Rates By Exchange Rate API', {
-          href: 'https://www.exchangerate-api.com', target: '_blank', rel: 'noopener'
-        }));
-      } else {
-        lineaUSD.textContent = '';
-      }
     });
-  }
 
   /* ============================================================
      7. FORMULARIO DE PEDIDOS (validación, descuento, WhatsApp)
@@ -815,62 +779,9 @@
     });
   }
 
-  /* ============================================================
-     8. ESCUDO ANTI-BORRADO (checklist de resistencia)
-     Cada casilla es una capa de protección; el nivel se guarda.
-     ============================================================ */
-  function iniciarEscudo() {
-    const casillas = document.querySelectorAll('[data-escudo]');
-    if (!casillas.length) return;
-
-    const relleno = $('escudo-relleno');
-    const porcentajeTexto = $('escudo-porcentaje');
-    const estadoTexto = $('escudo-estado');
-    const medidor = $('escudo-medidor');
-    const panel = $('escudo-panel');
-
-    const guardado = almacen.leer('localStorage', 'miel_escudo');
-    if (guardado) {
-      try {
-        const marcadas = JSON.parse(guardado);
-        casillas.forEach(function (c) { c.checked = marcadas.indexOf(c.dataset.escudo) !== -1; });
-      } catch (e) { /* dato dañado: se usan los valores del HTML */ }
-    }
-
-    function actualizar() {
-      const total = casillas.length;
-      const marcadas = [];
-      casillas.forEach(function (c) { if (c.checked) marcadas.push(c.dataset.escudo); });
-
-      const porcentaje = Math.round((marcadas.length / total) * 100);
-      let nivel, mensaje;
-
-      if (porcentaje === 100) {
-        nivel = 'blindado';
-        mensaje = '✅ SISTEMA BLINDADO — Miel & Morir Soñando no se borra otra vez.';
-      } else if (porcentaje >= 40) {
-        nivel = 'parcial';
-        mensaje = '🛡 PROTECCIÓN PARCIAL — faltan ' + (total - marcadas.length) + ' capas por activar.';
-      } else {
-        nivel = 'riesgo';
-        mensaje = '⚠ SISTEMA EN RIESGO — activa más capas de protección.';
-      }
-
-      if (relleno) relleno.style.width = porcentaje + '%';
-      if (porcentajeTexto) porcentajeTexto.textContent = porcentaje + '%';
-      if (estadoTexto) estadoTexto.textContent = mensaje;
-      if (medidor) medidor.setAttribute('aria-valuenow', String(porcentaje));
-      if (panel) panel.setAttribute('data-nivel', nivel);
-
-      almacen.guardar('localStorage', 'miel_escudo', JSON.stringify(marcadas));
-    }
-
-    casillas.forEach(function (c) { c.addEventListener('change', actualizar); });
-    actualizar();
-  }
 
   /* ============================================================
-     9. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
+     8. MAPA INTERACTIVO (LEAFLET + OPENSTREETMAP)
      ============================================================ */
   function iniciarMapa() {
     const contenedor = $('mapa');
@@ -915,6 +826,5 @@
   iniciarFiltros();
   iniciarCotizador();
   iniciarPedido();
-  iniciarEscudo();
   iniciarMapa();
 })();
