@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pide tu bizcocho, brownie o postre frío en Miel & Morir Soñando. Formulario con fecha de entrega, mapa y pruebas del incidente.">
-  <title>Pedidos y Evidencias | Miel & Morir Soñando</title>
+  <meta name="description" content="Pide tu bizcocho, brownie o postre frío en Miel &amp; Morir Soñando. Formulario con fecha de entrega, mapa y pruebas del incidente.">
+  <title>Pedidos y Evidencias | Miel &amp; Morir Soñando</title>
   <link rel="icon" href="img/logo-miel.png" type="image/png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="estilos.css">
+  <!-- Leaflet debe cargarse ANTES que script.js (ambos con defer mantienen el orden) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="script.js" defer></script>
 </head>
@@ -17,8 +18,8 @@
 
     <header class="cabecera">
       <a href="index.html" class="logo">
-        <img src="img/logo-miel.png" alt="Logo Miel & Morir Soñando" class="logo__img">
-        <span class="logo__texto">MIEL <span class="amp">&</span> MORIR SOÑANDO</span>
+        <img src="img/logo-miel.png" alt="Logo Miel &amp; Morir Soñando" class="logo__img" width="84" height="84">
+        <span class="logo__texto">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</span>
       </a>
 
       <nav aria-label="Navegación principal">
@@ -27,7 +28,7 @@
         <a href="contacto.html" aria-current="page">Pedidos</a>
       </nav>
 
-      <button id="boton-tema" class="boton-tema" aria-label="Cambiar tema">🌙</button>
+      <button id="boton-tema" class="boton-tema" type="button" aria-label="Cambiar a modo claro" aria-pressed="false">🌙</button>
     </header>
 
     <main>
@@ -49,7 +50,7 @@
       </section>
 
       <!-- PRUEBAS DEL INCIDENTE -->
-      <section class="seccion">
+      <section id="pruebas" class="seccion">
         <p class="etiqueta mono">// EVIDENCIAS RECREADAS PARA EL PROYECTO</p>
         <h2>Registro del <span class="resaltado">incidente</span></h2>
         <p class="seccion__intro">
@@ -96,7 +97,7 @@
       </section>
 
       <!-- FORMULARIO DE PEDIDOS -->
-      <section class="seccion seccion--banner">
+      <section id="pedido" class="seccion seccion--banner">
         <div class="banner">
           <p class="etiqueta mono">// CANAL DE PEDIDOS REACTIVADO</p>
           <h2>Haz tu pedido de <span class="resaltado">resurrección</span></h2>
@@ -105,20 +106,19 @@
             Te confirmamos por WhatsApp en menos de 1 hora.
           </p>
 
-          <form id="formulario-contacto" class="cotizador">
+          <form id="formulario-contacto" class="cotizador" novalidate>
             <label for="nombre">Nombre completo</label>
-            <input id="nombre" name="nombre" type="text" required placeholder="Escribe tu nombre">
+            <input id="nombre" name="nombre" type="text" required autocomplete="name"
+                   placeholder="Escribe tu nombre">
 
             <label for="correo">Correo electrónico</label>
-            <input id="correo" name="correo" type="email" required placeholder="tu@correo.com">
+            <input id="correo" name="correo" type="email" required autocomplete="email"
+                   placeholder="tu@correo.com">
 
             <label for="telefono">Teléfono / WhatsApp</label>
-            <input id="telefono" name="telefono" type="tel" required 
-       placeholder="8095550123" 
-       pattern="[0-9]{10}" 
-       maxlength="10"
-       inputmode="numeric"
-       title="Solo números, 10 dígitos (sin guiones)">
+            <input id="telefono" name="telefono" type="tel" required autocomplete="tel"
+                   placeholder="8095550123" maxlength="10" inputmode="numeric"
+                   title="Solo números, 10 dígitos (sin guiones)">
 
             <label for="producto-contacto">Producto</label>
             <select id="producto-contacto" name="producto" required>
@@ -133,36 +133,40 @@
               <option value="Cajita Regalo Premium">Cajita Regalo Premium</option>
             </select>
 
-            <label for="fecha-entrega">Fecha de entrega (mínimo 48 horas después)</label>
+            <label for="fecha-entrega">Fecha de entrega (mínimo 48 horas después, de lunes a sábado)</label>
             <input id="fecha-entrega" name="fecha" type="date" required>
 
             <label for="direccion">Dirección de entrega</label>
-            <input id="direccion" name="direccion" type="text" required placeholder="Calle, sector, ciudad">
+            <input id="direccion" name="direccion" type="text" required autocomplete="street-address"
+                   placeholder="Calle, sector, ciudad">
+
+            <label for="notas">Notas del pedido (opcional)</label>
+            <textarea id="notas" name="notas" rows="3"
+                      placeholder="Sabor, mensaje en el bizcocho, horario preferido..."></textarea>
 
             <label for="codigo-descuento">¿Tienes un código de descuento? (opcional)</label>
-<div class="codigo-descuento-wrap">
-  <input id="codigo-descuento" name="codigo" type="text" 
-         placeholder="Ej: RESURGIR20" maxlength="20"
-         style="text-transform: uppercase;">
-  <button type="button" id="aplicar-codigo" class="boton-aplicar">Aplicar</button>
-</div>
-<p id="estado-codigo" class="estado-codigo" aria-live="polite"></p>
+            <div class="codigo-descuento-wrap">
+              <input id="codigo-descuento" name="codigo" type="text"
+                     placeholder="Pista: busca el botón ?" maxlength="20" autocomplete="off">
+              <button type="button" id="aplicar-codigo" class="boton-aplicar">Aplicar</button>
+            </div>
+            <p id="estado-codigo" class="estado-codigo" aria-live="polite"></p>
 
             <button type="submit" class="boton boton--primario">ENVIAR PEDIDO</button>
-            <p id="estado-formulario" aria-live="polite" class="estado-formulario"></p>
+            <p id="estado-formulario" class="estado-formulario" aria-live="polite"></p>
           </form>
         </div>
       </section>
 
       <!-- MAPA -->
-      <section class="seccion">
+      <section id="ubicacion" class="seccion">
         <p class="etiqueta mono">// UBICACIÓN FÍSICA</p>
         <h2>Encuéntranos <span class="resaltado">en el mapa</span></h2>
         <p class="seccion__intro">
-          Nuestro taller principal está en Santo Domingo. Haz clic en el
+          Nuestro taller principal está en la Zona Colonial, Santo Domingo. Haz clic en el
           marcador para ver la dirección exacta.
         </p>
-        <div id="mapa" class="mapa" aria-label="Mapa de ubicación de Miel & Morir Soñando"></div>
+        <div id="mapa" class="mapa" role="region" aria-label="Mapa de ubicación de Miel &amp; Morir Soñando"></div>
       </section>
 
     </main>
@@ -170,7 +174,7 @@
     <footer class="pie">
       <div class="pie__grid">
         <div>
-          <p class="pie__marca">MIEL <span class="amp">&</span> MORIR SOÑANDO</p>
+          <p class="pie__marca">MIEL <span class="amp">&amp;</span> MORIR SOÑANDO</p>
           <p class="pie__texto">Repostería artesanal dominicana. Resucitada digitalmente el 26 de marzo.</p>
         </div>
         <div>
@@ -190,13 +194,18 @@
           </ul>
         </div>
       </div>
-      <p class="pie__copy mono">© 2026 Miel & Morir Soñando · Hecho con HTML, CSS y memoria.</p>
+      <p class="pie__copy mono">
+        © 2026 Miel &amp; Morir Soñando · Hecho con HTML, CSS y memoria.<br>
+        Proyecto académico del reto "Hackeando el Futuro de una Pyme": la historia, la marca y los testimonios son ficticios.
+      </p>
     </footer>
 
   </div>
 
+  <!-- EASTER EGG -->
   <button id="boton-secreto" class="boton-secreto" type="button" aria-label="Buscar secreto">?</button>
 
+  <!-- CHATBOT MIEL -->
   <section id="asistente" class="asistente" aria-label="Asistente virtual">
     <div class="asistente__titulo mono">MIEL // ASISTENTE DIGITAL</div>
     <div id="chat-mensajes" class="chat-mensajes" aria-live="polite">
@@ -204,13 +213,16 @@
     </div>
     <form id="chat-formulario">
       <label class="solo-lectores" for="chat-entrada">Escribe tu pregunta</label>
-      <input id="chat-entrada" type="text" placeholder="Escribe: pedido, entrega, precio..." required>
-      <button type="submit">➤</button>
+      <input id="chat-entrada" type="text" placeholder="Escribe: pedido, entrega, precio..." autocomplete="off" required>
+      <button type="submit" aria-label="Enviar pregunta">➤</button>
     </form>
   </section>
 
-  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente">💬</button>
+  <button id="boton-chat" class="boton-chat" type="button" aria-label="Abrir asistente" aria-expanded="false">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+    </svg>
+  </button>
 
 </body>
 </html>
-
